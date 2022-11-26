@@ -13,6 +13,18 @@ class Product:
     def __repr__(self):
         return "NAME: {}, PRICE: €{} ".format(self.name, self.price)
 
+    # Define a function to return the products name
+    def getName(self):
+        return self.name
+
+    # define a function to return the products price
+    def getPrice(self):
+        return self.price
+
+    # define a function to set an item price (used in Customer shopping list)
+    def setPrice(self, newPrice):
+        self.price = newPrice
+
 # defining the ProductStock class
 # This class will keep track of the stock levels for each product in the shop and on the customers shopping list
 class ProductStock:
@@ -24,15 +36,39 @@ class ProductStock:
     
     # defining function to get the name of the product
     def getName(self):
-        return self.product.name;
+        return self.product.getName()
     
     # defining function to get the Unit price of the product
     def getUnitPrice(self):
-        return self.product.price;
+        return self.product.getPrice()
+
+    def getProduct(self):
+        return self.product
 
     #defining function to get the total cost of of all the products in stock  
     def getCost(self):
         return self.getUnitPrice() * self.quantity
+
+    def getQty(self):
+        return self.quantity
+
+    # Change incrementally the stock qty by the asked sales Qty
+    def changeQty(self, askedSalesQty):
+
+        oldQty = self.quantity
+
+        # check if stock is enough to perform the sales for full qty
+        if  self.quantity >= askedSalesQty:      
+            self.quantity -= askedSalesQty
+        else:
+            self.quantity = 0
+        
+        # Return the actual sales quantity
+        return oldQty-self.quantity
+
+
+    def setQty(self, newQty):
+        self.quantity = newQty
 
     # print function: Returns the Name of the product and it's stock level        
     def __repr__(self):
@@ -88,6 +124,9 @@ class Customer:
             cost += list_item.getCost()
         
         return cost
+
+    def getShoppingList(self):
+        return self.shopping_list
     
     def __repr__(self):
         
@@ -105,7 +144,7 @@ class Customer:
                 str += " COST: €{}".format(cost)
 
         # add a message describing money left from the Customre budget after the shopping                
-        str += "\nThe cost would be: €{:.2f}, he would have €{:.2f} left".format(self.getOrder_cost(), self.budget - self.getOrder_cost())
+        str += "\nThe cost would be: €{:.2f}, he would have €{:.2f} left\n".format(self.getOrder_cost(), self.budget - self.getOrder_cost())
         return str 
 
 
@@ -141,11 +180,55 @@ class Shop:
     def getStock(self):
         return self.stock
 
+    # Define function to perform the sales transaction
+    def performSales(self, shoppingList):
+        cost = 0
+
+        # loop over products in the shops stock ((array of Stock Class Objects))
+        for stock_item in self.stock:
+            # loop over the shopping list (array of Stock Class Objects)
+            for shopping_list_item in shoppingList:
+                # check if product name on the shopping list matches name in the stock
+                if (shopping_list_item.getName() == stock_item.getName()):
+                    # if it matches, get its price and assign it to the price of the items on ths shopping list
+                    shopping_list_item.getProduct().setPrice(stock_item.getUnitPrice())
+
+                    # Get the required product qty form the shopping list
+                    askedSalesQty = shopping_list_item.getQty()
+
+                    # Decrese the Shop stock by the qty from the shopping list
+                    # If not enough in stock, set stock to 0
+                    # Return the actual sale quantity
+                    actualSalesQty = stock_item.changeQty(askedSalesQty)
+
+                    # Set the shopping list to the actual sales quantity
+                    shopping_list_item.setQty(actualSalesQty)
+                    
+                    # Calculate the cost using updated Shopping list qty using the actual sales qty
+                    cost += shopping_list_item.getCost()
+
+        self.cash += cost
+
+        return cost
+
 # Create an instance of the Shop class
-s = Shop("stock.csv")
-print(s)
+myShop = Shop("stock.csv")
+
+print("\nShop and the Customer pre-transaction: \n")
+
+print(myShop)
 
 # Create an instance of the Customer class
-c = Customer("customer.csv")
-c.calculate_costs(s.getStock())
-print(c)
+customer1 = Customer("customer.csv")
+
+print(customer1)
+
+customer1.calculate_costs(myShop.getStock())
+
+myShop.performSales(customer1.getShoppingList())
+
+print("Shop and the Customer post-transaction: \n")
+
+print(customer1)
+
+print(myShop)
