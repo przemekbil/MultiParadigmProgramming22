@@ -1,5 +1,13 @@
 import csv
 
+# Define the Custom Error Classes
+# from https://www.programiz.com/python-programming/user-defined-exception
+class NotEnoughStockError(Exception):
+    pass
+
+class BudgetTooLowError(Exception):
+    pass
+
 # defining the Product class
 # This class will describe a product in the shop
 class Product:
@@ -57,11 +65,14 @@ class ProductStock:
 
         oldQty = self.quantity
 
-        # check if stock is enough to perform the sales for full qty
+        # Decrese the Shop stock by the qty from the shopping list
+        # If not enough in stock, set stock to 0
+        # Return the actual sale quantity
         if  self.quantity >= askedSalesQty:      
             self.quantity -= askedSalesQty
-        else:
+        else:            
             self.quantity = 0
+            raise NotEnoughStockError("Not enough stock!")
         
         # Return the actual sales quantity
         return oldQty-self.quantity
@@ -138,6 +149,9 @@ class Customer:
         
         return cost
 
+    def getName(self):
+        return self.name
+
     def getShoppingList(self):
         return self.shopping_list
 
@@ -146,6 +160,20 @@ class Customer:
 
     def isTransactionCompleted(self):
         return self.transactionCompleted
+
+    def payForItem(self, shoppingListItem):
+
+        prePayBudget = self.budget
+
+        if self.budget >= shoppingListItem.getCost():
+            self.budget -= shoppingListItem.getCost()
+
+            print(shoppingListItem.getCost())
+
+        else:
+            raise BudgetTooLowError
+
+        return prePayBudget - self.budget       
     
     def __repr__(self):
         
@@ -160,7 +188,7 @@ class Customer:
             str += "\n{} ".format(item)
 
             # if cost of the Shopping list item is 0, print this message:
-            if (cost == 0):
+            if (item.getUnitPrice() == 0):
                 str +=  "{} doesn't know how much that costs :(".format(self.name)
             else:
             # otherwise, print the cost of the item
@@ -168,7 +196,7 @@ class Customer:
 
         # add a message describing money left from the Customre budget after the shopping             
         str +="\n------------------------------------------"
-        str += "\nThe total cost would be: €{:.2f}, he would have €{:.2f} left\n".format(self.getOrder_cost(), self.budget - self.getOrder_cost())
+        str += "\nThe total cost would be: €{:.2f}, he would have €{:.2f} left\n".format(self.getOrder_cost(), self.budget)
         return str 
 
 
@@ -204,15 +232,21 @@ class Shop:
     def getStock(self):
         return self.stock
 
+    def addToExceptionsFiles(self, msg):
+
+        # TODO: add msg to file Exceptions.csv
+
+        print(msg)
+
     # Define function to perform the sales transaction
     def performSales(self, customer):
 
         # Sum cost of all items to clalculate the total transaction cost
         transactionCost = 0
 
-        # loop over the customers shopping list (array of Stock Class Objects)
+        # loop over the customers shopping list (array of ShoppingListItem Class Objects)
         for shopping_list_item in customer.getShoppingList():
-            # loop over products in the shops stock ((array of Stock Class Objects))
+            # find the matching product in the Shops stock (array of ProductStock Class Objects)
             for stock_item in self.stock:            
                 # check if product name on the shopping list matches name in the stock
                 if (shopping_list_item.getName() == stock_item.getName()):
@@ -220,21 +254,39 @@ class Shop:
                     # if it matches, get its price and assign it to the price of the items on ths shopping list
                     shopping_list_item.getProduct().setPrice(stock_item.getUnitPrice())
 
+                    initialStock = stock_item.getQty()
+
                     # Get the required product qty form the shopping list
                     askedSalesQty = shopping_list_item.getQty()
 
                     # Decrese the Shop stock by the qty from the shopping list
                     # If not enough in stock, set stock to 0
                     # Return the actual sale quantity
-                    actualSalesQty = stock_item.changeQty(askedSalesQty)
+                    try:
+                        actualSalesQty = stock_item.changeQty(askedSalesQty)
+                    except NotEnoughStockError:
+                        actualSalesQty = initialStock
+                        self.addToExceptionsFiles("There is not enough {} in stock. Actual stock: {}, required Stock {} ".format(shopping_list_item.getName(), actualSalesQty, askedSalesQty))
 
                     # Set the shopping list to the actual sales quantity
-                    shopping_list_item.setQty(actualSalesQty)
-                    
-                    # Calculate the cost using updated Shopping list qty using the actual sales qty
-                    transactionCost += shopping_list_item.getCost()
+                    shopping_list_item.setQty(actualSalesQty)         
 
-        self.cash += transactionCost
+                                        
+                    # If customer have enough money, pay for the items
+                    try:
+                        self.cash += customer.payForItem(shopping_list_item)
+                    except BudgetTooLowError:
+                        self.addToExceptionsFiles("{} has not enough money to pay for {} {} worth €{:.2f} as he has only €{:.2f} \n".format(
+                            customer.getName(), actualSalesQty, shopping_list_item.getName(), shopping_list_item.getCost(), customer.budget ))
+
+                        # Roll back on customer and shop stock changes
+                        shopping_list_item.setQty(0)
+                        stock_item.setQty(initialStock)                            
+
+                    
+
+
+        
         customer.setTransactionCompleted()
 
         return transactionCost
