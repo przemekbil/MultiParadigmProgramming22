@@ -75,19 +75,22 @@ class ProductStock:
         return "{} STOCK QUANTITY: {:3d}".format(self.product, self.quantity)
 
 
-class ShoppingList(ProductStock):
+class ShoppingListItem(ProductStock):
 
         # Constructor function (takes objects of Product class and quantity)
     def __init__(self, product, quantity):
 
         super().__init__(product, quantity)
         self.afterTransaction = False
+    
+    #def isAfterTransaction(self):
+     #   return self.afterTransaction
 
     def __repr__(self):
         if self.afterTransaction:
             return "{} BOUGHT QUANTITY: {:3d}".format(self.product, self.quantity)
         else:
-            return "{} REQUIRED QUANTITY: {:3d}".format(self.product, self.quantity)            
+            return "{} REQUIRED QUANTITY: {:3d}".format(self.product, self.quantity)           
 
     # Override parent class setQty method. This method will be used to set the bought qty (after transaction)
     def setQty(self, newQty):
@@ -100,6 +103,9 @@ class Customer:
     # Constructor function
     # needs Path of the csv file with customer specification
     def __init__(self, path):
+
+        # Use this variable to store if the transaction has been completed
+        self.transactionCompleted = False
 
         # Shopping list: list of Products to buy
         self.shopping_list = []
@@ -117,22 +123,10 @@ class Customer:
             for row in csv_reader:
                 name = row[0]
                 quantity = int(row[1])
-                # Use 'name' to unitialize an instance of a Product class
+                # Use 'name' to initialize an instance of a Product class
                 p = Product(name)
-                # Use the the instance of Product class and required quantity to initialize and instance of ProductStock class
-                ps = ShoppingList(p, quantity)
-                self.shopping_list.append(ps) 
-
-    # function to calculate the todatl cost of the shopping list                
-    def calculate_costs(self, shopStock):
-        # loop over products in the shops stock
-        for shop_item in shopStock:
-            # loop over the shopping list
-            for list_item in self.shopping_list:
-                # check if product name on the shopping list matches name in the stock
-                if (list_item.getName() == shop_item.getName()):
-                    # if it matches, get its price and assign it to the price of the items on ths shopping list
-                    list_item.product.price = shop_item.getUnitPrice()
+                # Use the the instance of Product class and required quantity to initialize and instance of ShoppingListItem class                
+                self.shopping_list.append(ShoppingListItem(p, quantity)) 
     
     # function to calculate the total cost of the customers order
     def getOrder_cost(self):
@@ -146,10 +140,20 @@ class Customer:
 
     def getShoppingList(self):
         return self.shopping_list
+
+    def setTransactionCompleted(self):
+        self.transactionCompleted = True
+
+    def isTransactionCompleted(self):
+        return self.transactionCompleted
     
     def __repr__(self):
         
-        str =  "{} wants to buy".format(self.name) #f"{self.name} wants to buy"
+        if self.isTransactionCompleted():
+            str =  "{} bought:".format(self.name) 
+        else:
+            str =  "{} wants to buy:".format(self.name) 
+
         # Loop over the Shopping list and print a total cost of each items
         for item in self.shopping_list:
             cost = item.getCost()
@@ -164,7 +168,7 @@ class Customer:
 
         # add a message describing money left from the Customre budget after the shopping             
         str +="\n------------------------------------------"
-        str += "\nThe cost would be: €{:.2f}, he would have €{:.2f} left\n".format(self.getOrder_cost(), self.budget - self.getOrder_cost())
+        str += "\nThe total cost would be: €{:.2f}, he would have €{:.2f} left\n".format(self.getOrder_cost(), self.budget - self.getOrder_cost())
         return str 
 
 
@@ -201,15 +205,18 @@ class Shop:
         return self.stock
 
     # Define function to perform the sales transaction
-    def performSales(self, shoppingList):
-        cost = 0
+    def performSales(self, customer):
 
-        # loop over products in the shops stock ((array of Stock Class Objects))
-        for stock_item in self.stock:
-            # loop over the shopping list (array of Stock Class Objects)
-            for shopping_list_item in shoppingList:
+        # Sum cost of all items to clalculate the total transaction cost
+        transactionCost = 0
+
+        # loop over the customers shopping list (array of Stock Class Objects)
+        for shopping_list_item in customer.getShoppingList():
+            # loop over products in the shops stock ((array of Stock Class Objects))
+            for stock_item in self.stock:            
                 # check if product name on the shopping list matches name in the stock
                 if (shopping_list_item.getName() == stock_item.getName()):
+
                     # if it matches, get its price and assign it to the price of the items on ths shopping list
                     shopping_list_item.getProduct().setPrice(stock_item.getUnitPrice())
 
@@ -225,30 +232,28 @@ class Shop:
                     shopping_list_item.setQty(actualSalesQty)
                     
                     # Calculate the cost using updated Shopping list qty using the actual sales qty
-                    cost += shopping_list_item.getCost()
+                    transactionCost += shopping_list_item.getCost()
 
-        self.cash += cost
+        self.cash += transactionCost
+        customer.setTransactionCompleted()
 
-        return cost
+        return transactionCost
 
+# Create instance of both Customer and Shop classes
 # Create an instance of the Shop class
 myShop = Shop("stock.csv")
-
-print("\nShop and the Customer pre-transaction: \n")
-
-print(myShop)
-
 # Create an instance of the Customer class
 customer1 = Customer("customer.csv")
 
+# Print customer and shop states before the transaction
+print("\nShop and the Customer pre-transaction: \n")
+print(myShop)
 print(customer1)
 
-customer1.calculate_costs(myShop.getStock())
+# Perform the sales transaction
+myShop.performSales(customer1)
 
-myShop.performSales(customer1.getShoppingList())
-
+# Print the states of both objects after the transaction
 print("Shop and the Customer post-transaction: \n")
-
 print(customer1)
-
 print(myShop)
