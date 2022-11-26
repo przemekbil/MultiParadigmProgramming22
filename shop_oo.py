@@ -11,7 +11,7 @@ class Product:
     
     # print function
     def __repr__(self):
-        return "NAME: {}, PRICE: €{} ".format(self.name, self.price)
+        return "NAME: {}, PRICE: €{:.2f} ".format(self.name, self.price)
 
     # Define a function to return the products name
     def getName(self):
@@ -72,8 +72,27 @@ class ProductStock:
 
     # print function: Returns the Name of the product and it's stock level        
     def __repr__(self):
-        return "{} STOCK QUANTITY: {}".format(self.product, self.quantity)   #f"{self.product} QUANTITY: {self.quantity}"
+        return "{} STOCK QUANTITY: {:3d}".format(self.product, self.quantity)
 
+
+class ShoppingList(ProductStock):
+
+        # Constructor function (takes objects of Product class and quantity)
+    def __init__(self, product, quantity):
+
+        super().__init__(product, quantity)
+        self.afterTransaction = False
+
+    def __repr__(self):
+        if self.afterTransaction:
+            return "{} BOUGHT QUANTITY: {:3d}".format(self.product, self.quantity)
+        else:
+            return "{} REQUIRED QUANTITY: {:3d}".format(self.product, self.quantity)            
+
+    # Override parent class setQty method. This method will be used to set the bought qty (after transaction)
+    def setQty(self, newQty):
+        super().setQty(newQty)
+        self.afterTransaction = True       
 
 # Define the Customer class
 class Customer:
@@ -97,11 +116,11 @@ class Customer:
             # Read the 2nd line the shopping items
             for row in csv_reader:
                 name = row[0]
-                quantity = float(row[1])
+                quantity = int(row[1])
                 # Use 'name' to unitialize an instance of a Product class
                 p = Product(name)
                 # Use the the instance of Product class and required quantity to initialize and instance of ProductStock class
-                ps = ProductStock(p, quantity)
+                ps = ShoppingList(p, quantity)
                 self.shopping_list.append(ps) 
 
     # function to calculate the todatl cost of the shopping list                
@@ -141,9 +160,10 @@ class Customer:
                 str +=  "{} doesn't know how much that costs :(".format(self.name)
             else:
             # otherwise, print the cost of the item
-                str += " COST: €{}".format(cost)
+                str += " COST: €{:.2f}".format(cost)
 
-        # add a message describing money left from the Customre budget after the shopping                
+        # add a message describing money left from the Customre budget after the shopping             
+        str +="\n------------------------------------------"
         str += "\nThe cost would be: €{:.2f}, he would have €{:.2f} left\n".format(self.getOrder_cost(), self.budget - self.getOrder_cost())
         return str 
 
@@ -162,12 +182,12 @@ class Shop:
             self.cash = float(first_row[0])
             for row in csv_reader:
                 p = Product(row[0], float(row[1]))
-                ps = ProductStock(p, float(row[2]))
+                ps = ProductStock(p, int(row[2]))
                 self.addToStock(ps)
     
     def __repr__(self):
         str = ""
-        str += "Shop has €{} in cash\n".format(self.cash)
+        str += "Shop has €{:.2f} in cash\n".format(self.cash)
         for item in self.getStock():
             str += "{}\n".format(item)
         return str
