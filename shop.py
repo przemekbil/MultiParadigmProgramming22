@@ -70,10 +70,14 @@ def print_customer(cust):
         print("Name: {},  Quantity: {}".format(product["name"], product["qty"]))
 
 
-myShop = create_and_stock_shop()
 
-print_shop(myShop)
+# main for function call
+if __name__ == "__main__":
 
-customer = read_customer()
+    myShop = create_and_stock_shop()
 
-print_customer(customer)
+    print_shop(myShop)
+
+    customer = read_customer()
+
+    print_customer(customer)
