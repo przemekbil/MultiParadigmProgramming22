@@ -242,6 +242,17 @@ class Shop:
 
         print(msg)
 
+    # Method to search Shops stock by the product name
+    # If product is found, Unit price and stock Qty is returned
+    # If no product of that name is found, 0,0 is returned
+    def checkStockByName(self, searched_name):
+
+        for stock_item in self.stock:
+            if stock_item.getName()==searched_name:
+                return stock_item.getUnitPrice(), stock_item.getQty()
+        
+        return 0, 0
+
     # Define function to perform the sales transaction
     def performSales(self, customer):
 
