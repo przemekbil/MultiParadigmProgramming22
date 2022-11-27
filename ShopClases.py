@@ -94,8 +94,8 @@ class ShoppingListItem(ProductStock):
         super().__init__(product, quantity)
         self.afterTransaction = False
     
-    #def isAfterTransaction(self):
-     #   return self.afterTransaction
+    def isAfterTransaction(self):
+       return self.afterTransaction
 
     def __repr__(self):
         if self.afterTransaction:
@@ -274,43 +274,47 @@ class Shop:
         transactionCost = 0
 
         # loop over the customers shopping list (array of ShoppingListItem Class Objects)
-        for shopping_list_item in customer.getShoppingList():
-            # find the matching product in the Shops stock (array of ProductStock Class Objects)
-            for stock_item in self.stock:            
-                # check if product name on the shopping list matches name in the stock
-                if (shopping_list_item.getName() == stock_item.getName()):
+        for shopping_list_item in customer.getShoppingList():            
+            
+            # Make sure that the product has not been bought yet
+            if not(shopping_list_item.isAfterTransaction()):
 
-                    # if it matches, get its price and assign it to the price of the items on ths shopping list
-                    shopping_list_item.getProduct().setPrice(stock_item.getUnitPrice())
+                # find the matching product in the Shops stock (array of ProductStock Class Objects)
+                for stock_item in self.stock:            
+                    # check if product name on the shopping list matches name in the stock
+                    if (shopping_list_item.getName() == stock_item.getName()):
 
-                    initialStock = stock_item.getQty()
+                        # if it matches, get its price and assign it to the price of the items on ths shopping list
+                        shopping_list_item.getProduct().setPrice(stock_item.getUnitPrice())
 
-                    # Get the required product qty form the shopping list
-                    askedSalesQty = shopping_list_item.getQty()
+                        initialStock = stock_item.getQty()
 
-                    # Decrese the Shop stock by the qty from the shopping list
-                    # If not enough in stock, set stock to 0
-                    # Return the actual sale quantity
-                    try:
-                        actualSalesQty = stock_item.changeQty(askedSalesQty)
-                    except NotEnoughStockError:
-                        actualSalesQty = initialStock
-                        self.addToExceptionsFiles("There is not enough {} in stock. Actual stock: {}, required Stock {} ".format(shopping_list_item.getName(), actualSalesQty, askedSalesQty))
+                        # Get the required product qty form the shopping list
+                        askedSalesQty = shopping_list_item.getQty()
 
-                    # Set the shopping list to the actual sales quantity
-                    shopping_list_item.setQty(actualSalesQty)         
+                        # Decrese the Shop stock by the qty from the shopping list
+                        # If not enough in stock, set stock to 0
+                        # Return the actual sale quantity
+                        try:
+                            actualSalesQty = stock_item.changeQty(askedSalesQty)
+                        except NotEnoughStockError:
+                            actualSalesQty = initialStock
+                            self.addToExceptionsFiles("There is not enough {} in stock. Actual stock: {}, required Stock {} ".format(shopping_list_item.getName(), actualSalesQty, askedSalesQty))
 
-                                        
-                    # If customer have enough money, pay for the items
-                    try:
-                        self.cash += customer.payForItem(shopping_list_item)
-                    except BudgetTooLowError:
-                        self.addToExceptionsFiles("{} has not enough money to pay for {} {} worth €{:.2f} as he has only €{:.2f} \n".format(
-                            customer.getName(), actualSalesQty, shopping_list_item.getName(), shopping_list_item.getCost(), customer.budget ))
+                        # Set the shopping list to the actual sales quantity
+                        shopping_list_item.setQty(actualSalesQty)         
 
-                        # Roll back on customer and shop stock changes
-                        shopping_list_item.setQty(0)
-                        stock_item.setQty(initialStock)                            
+                                            
+                        # If customer have enough money, pay for the items
+                        try:
+                            self.cash += customer.payForItem(shopping_list_item)
+                        except BudgetTooLowError:
+                            self.addToExceptionsFiles("{} has not enough money to pay for {} {} worth €{:.2f} as he has only €{:.2f} \n".format(
+                                customer.getName(), actualSalesQty, shopping_list_item.getName(), shopping_list_item.getCost(), customer.budget ))
+
+                            # Roll back on customer and shop stock changes
+                            shopping_list_item.setQty(0)
+                            stock_item.setQty(initialStock)                            
                         
         customer.setTransactionCompleted()
 
