@@ -112,8 +112,8 @@ class ShoppingListItem(ProductStock):
 class Customer:
 
     # Constructor function
-    # needs Path of the csv file with customer specification
-    def __init__(self, path):
+    # needs customer name and the budget
+    def __init__(self, path="", name="", budget=0):
 
         # Use this variable to store if the transaction has been completed
         self.transactionCompleted = False
@@ -121,24 +121,36 @@ class Customer:
         # Shopping list: list of Products to buy
         self.shopping_list = []
 
-        # Read the customer infor from the csv file
-        with open(path) as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
+        if len(path)==0:
+            self.name = name
+            self.budget = budget
+        else:
+            # Read the customer infor from the specified csv file
+            with open(path) as csv_file:
+                csv_reader = csv.reader(csv_file, delimiter=',')
 
-            # Read first row of scv file and use it to specified to shopping budget of the customer
-            first_row = next(csv_reader)
-            self.name = first_row[0]
-            self.budget = float(first_row[1])
+                # Read first row of scv file and use it to specified to shopping budget of the customer
+                first_row = next(csv_reader)
+                self.name = first_row[0]
+                self.budget = float(first_row[1])
 
-            # Read the 2nd line the shopping items
-            for row in csv_reader:
-                name = row[0]
-                quantity = int(row[1])
-                # Use 'name' to initialize an instance of a Product class
-                p = Product(name)
-                # Use the the instance of Product class and required quantity to initialize and instance of ShoppingListItem class                
-                self.shopping_list.append(ShoppingListItem(p, quantity)) 
+                # Read the 2nd line the shopping items
+                for row in csv_reader:
+                    name = row[0]
+                    quantity = int(row[1])
+                    # Use 'name' to initialize an instance of a Product class
+                    p = Product(name)
+                    # Use the the instance of Product class and required quantity to initialize and instance of ShoppingListItem class                
+                    self.shopping_list.append(ShoppingListItem(p, quantity)) 
+
     
+    # Add product to the shopping list (shopping cart)
+    def addItemToShoppingCart(self, productName, prodQty, prodCost):
+
+        p = Product(productName, prodCost)
+        self.shopping_list.append(ShoppingListItem(p, prodQty))
+
+
     # function to calculate the total cost of the customers order
     def getOrder_cost(self):
         cost = 0
@@ -249,9 +261,11 @@ class Shop:
 
         for stock_item in self.stock:
             if stock_item.getName()==searched_name:
-                return stock_item.getUnitPrice(), stock_item.getQty()
+                return stock_item
         
-        return 0, 0
+        # If above loop doesn't find the searched product
+        # Return instance of the ProductStock object with cost of 0 and 0 stock
+        return ProductStock(Product(searched_name, 0), 0)
 
     # Define function to perform the sales transaction
     def performSales(self, customer):

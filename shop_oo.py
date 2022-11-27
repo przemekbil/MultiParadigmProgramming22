@@ -2,20 +2,26 @@ import ShopClases
 
 # Re-used from 3rd semester Algorithms module
 # Inspired by https://computinglearner.com/how-to-create-a-menu-for-a-python-console-application/
-def display_menu(options):
+def display_menu(options, level):
 
     # add empty line before and after the menu
     print()
     # print the Menu options on the screen
+
+    # Add extra spaces depending on the level of the Menu
+    prefix = ""
+    for i in range(level):
+        prefix += "   "
+
     for key in options:
-        print("{}---{}".format(key, options[key]))
+        print("{}{}---{}".format(prefix, key, options[key]))
     print()
 
 # Re-used from 3rd semester Algorithms module
-# Function to read user numerical input
+# Function to read user menu selection
 # msg - message to be displayed to prompt user for input
 # err_msg - error message to display when input other than number is sleected
-def get_user_input(msg, err_msg):
+def get_user_selection(msg, err_msg):
 
     # Infinite loop
     while True:
@@ -29,6 +35,24 @@ def get_user_input(msg, err_msg):
 
     # Return the number selected by the user
     return choice    
+
+# Function to read user menu selection
+# msg - message to be displayed to prompt user for input
+# err_msg - error message to display when input other than number is sleected
+def get_user_number(msg, err_msg):
+
+    # Infinite loop
+    while True:
+        # Try to convert input into integer
+        # if it's not possible, display error message and wait for user input
+        try:
+            choice = float(input(msg))
+            break
+        except:
+            print(err_msg)
+
+    # Return the number selected by the user
+    return choice       
 
 
 def read_shopping_list_from_file(sl_path, myShop):
@@ -54,37 +78,59 @@ def live_mode(myShop):
 
     Live_shop_options = {
         3: 'Ask for product',
-        4: 'Check balance',
+        4: 'Check the shopping cart',
+        5: 'Pay for items',
         0: 'Exit'
     }
 
     print("Live mode shop")
 
+    customer_name = input("Please enter the Customer name: ")
+    customer_budget = get_user_number('Please enter the Customer budget: ', '\nPlease input a number')
+
+    liveCustomer = ShopClases.Customer(name=customer_name, budget=customer_budget)
+
+
     while True:
 
-        display_menu(Live_shop_options)
+        display_menu(Live_shop_options, 1)
         # Get users choice
-        user_choice = get_user_input('Enter your choice: ', '\nPlease input a number')
+        user_choice = get_user_selection('Enter your choice: ', '\nPlease input a number')
 
         if user_choice == 3:
             # Ask the user for th eproduct name
             prod_name = input("Please enter the product name: ")
             
             # Ask the Shop for the prices and stock level of required product
-            prod_price, prod_stock = myShop.checkStockByName(prod_name)
+            shopStockItem = myShop.checkStockByName(prod_name)
 
             # Check if product is found in Shops stock
-            if prod_price == 0:
+            if shopStockItem.getQty() == 0:
                 print("The Shop doesn't have {} in stock".format(prod_name))
             else:
-                print("The Shop has {} units of {} in stock. The unit price is €{} ".format(prod_stock, prod_name, prod_price))
-                req_amount = get_user_input("Please specified the required amount: ", "'\nPlease input a whole number'")
+                print("The Shop has {} units of {} in stock. The unit price is €{} ".format(shopStockItem.getQty(), prod_name, shopStockItem.getUnitPrice()))
+                req_amount = get_user_selection("Please specified the required amount: ", "'\nPlease input a whole number'")
 
-                while req_amount > prod_stock:
-                    req_amount = get_user_input("The shop doesn't have sufficient stock to filfill this order. Please enter new amount or 0 to exit: ", "'\nPlease input a whole number'")
+                # Keep asking the user for the new amount until it's equal or smaller than the stock
+                # Selecting 0 will cancel the order
+                while req_amount > shopStockItem.getQty():
+                    req_amount = get_user_selection("The shop doesn't have sufficient stock to fulfill this order. Please enter amount less or equal to {} or 0 to cancel: ".format(shopStockItem.getQty()),
+                     "'\nPlease input a whole number'")
+
+                liveCustomer.addItemToShoppingCart(prod_name, req_amount, shopStockItem.getUnitPrice())
+                #print("You requested for {} units of {} which will cost {}. Do you want to coninue?".format(req_amount, prod_name, shopStockItem.getCost()))
+
+                
 
         elif user_choice == 4:
-            print("Check balance: ")
+            print(myShop)
+            print(liveCustomer)
+        elif user_choice == 5:
+             # Perform the sales transaction
+            myShop.performSales(liveCustomer)
+            # Print customer and shop states after the transaction
+            print(myShop)
+            print(liveCustomer)            
         elif user_choice == 0:
             print("Exiting to Main Menu")
             break
@@ -108,9 +154,9 @@ if __name__ == "__main__":
     while True:   
 
         # Display Menu 
-        display_menu(main_menu_options)
+        display_menu(main_menu_options, 0)
         # Get users choice
-        user_choice = get_user_input('Enter your choice: ', '\nPlease input a number')        
+        user_choice = get_user_selection('Enter your choice: ', '\nPlease input a number')        
 
         # Choice 1: Read shopping list from file
         if user_choice == 1:
