@@ -1,4 +1,6 @@
+# Import custom Shop and Customer classes
 import ShopClases
+import os
 
 # Re-used from 3rd semester Algorithms module
 # Inspired by https://computinglearner.com/how-to-create-a-menu-for-a-python-console-application/
@@ -83,6 +85,8 @@ def live_mode(myShop):
         0: 'Exit'
     }
 
+    # Clear the console
+    os.system('cls')
     print("Live mode shop")
 
     customer_name = input("Please enter the Customer name: ")
@@ -92,7 +96,9 @@ def live_mode(myShop):
 
 
     while True:
-
+        # Clear the console
+        os.system('cls')
+        # Display the live shop menu options
         display_menu(Live_shop_options, 1)
         # Get users choice
         user_choice = get_user_selection('Enter your choice: ', '\nPlease input a number')
@@ -123,14 +129,24 @@ def live_mode(myShop):
                 
 
         elif user_choice == 4:
+            # Clear the console
+            os.system('cls')            
             print(myShop)
             print(liveCustomer)
+            input("Press ENTER to continue")
         elif user_choice == 5:
              # Perform the sales transaction
-            myShop.performSales(liveCustomer)
+            try:
+                # Clear the console
+                os.system('cls')
+                myShop.performSales(liveCustomer)
+                print(myShop)
+                print(liveCustomer)  
+            except ShopClases.BudgetTooLowError:
+                print("\nERROR: The customer has insufficient funds to complete this transaction!\n")
+                input("Press ENTER to continue")
             # Print customer and shop states after the transaction
-            print(myShop)
-            print(liveCustomer)            
+          
         elif user_choice == 0:
             print("Exiting to Main Menu")
             break
@@ -153,7 +169,9 @@ if __name__ == "__main__":
     # display the user Menu until 0 is selected
     while True:   
 
-        # Display Menu 
+        # Clear the console
+        os.system('cls')
+        # Display Menu       
         display_menu(main_menu_options, 0)
         # Get users choice
         user_choice = get_user_selection('Enter your choice: ', '\nPlease input a number')        

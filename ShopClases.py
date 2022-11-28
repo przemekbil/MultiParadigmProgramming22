@@ -277,7 +277,7 @@ class Shop:
     def performSales(self, customer):
 
         # Sum cost of all items to clalculate the total transaction cost
-        transactionCost = 0
+        # transactionCost = 0
 
         # loop over the customers shopping list (array of ShoppingListItem Class Objects)
         for shopping_list_item in customer.getShoppingList():            
@@ -320,8 +320,8 @@ class Shop:
 
                             # Roll back on customer and shop stock changes
                             shopping_list_item.setQty(0)
-                            stock_item.setQty(initialStock)                            
+                            stock_item.setQty(initialStock)
+
+                            raise BudgetTooLowError                      
                         
         customer.setTransactionCompleted()
-
-        return transactionCost
