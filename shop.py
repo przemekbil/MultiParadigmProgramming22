@@ -67,7 +67,7 @@ def print_customer(cust):
 
     print("Shopping list:")
     for product in cust["shopping_list"]:
-        print("Name: {},  Quantity: {}".format(product["name"], product["qty"]))
+        print("Name: {},  Quantity: {}".format(product["name"], product["qty"]))        
 
 
 

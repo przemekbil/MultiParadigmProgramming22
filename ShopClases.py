@@ -1,3 +1,9 @@
+# Przemyslaw Bil
+# g00398317@atu.ie
+# Multi Paradigm Programming 2022
+
+# Collections of Classes used in shop simulation written using Object Oriented Python
+
 import csv
 from ShopErrors import NotEnoughStockError, BudgetTooLowError
 
