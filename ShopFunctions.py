@@ -57,4 +57,24 @@ def get_user_number(msg, err_msg):
             print(err_msg)
 
     # Return the number selected by the user
-    return choice       
+    return choice
+
+# Function returns the menu options for both the Manin Menu and the live shop menu
+def defineMenuChoices():
+    
+    # selection options for the main menu
+    main = {
+        1: 'Read Shopping list from file',
+        2: 'Live mode',
+        0: 'Exit'
+    }
+
+    # Selection options for the live shop menu
+    live = {
+        3: 'Ask for product',
+        4: 'Check the shopping cart',
+        5: 'Pay for items',
+        0: 'Exit'
+    }
+
+    return main, live

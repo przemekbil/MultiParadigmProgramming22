@@ -82,7 +82,7 @@ class ProductStock:
 
     # print function: Returns the Name of the product and it's stock level        
     def __repr__(self):
-        return "{} STOCK QUANTITY: {:3d}".format(self.product, self.quantity)
+        return "{}, STOCK QUANTITY: {:3d}".format(self.product, self.quantity)
 
 
 class ShoppingListItem(ProductStock):
@@ -235,6 +235,7 @@ class Shop:
     def __repr__(self):
         str = ""
         str += "Shop has €{:.2f} in cash\n".format(self.cash)
+        str+= "Stock:\n"
         for item in self.getStock():
             str += "{}\n".format(item)
         return str

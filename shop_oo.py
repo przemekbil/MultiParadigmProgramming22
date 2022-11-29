@@ -6,10 +6,10 @@
 
 
 # Import custom Shop and Customer classes
-import ShopClases
+from ShopClases import Customer, Shop
 import os
 from ShopErrors import BudgetTooLowError
-from ShopFunctions import display_menu, get_user_selection, get_user_number
+from ShopFunctions import display_menu, get_user_selection, get_user_number, defineMenuChoices
 
     
 
@@ -17,12 +17,15 @@ from ShopFunctions import display_menu, get_user_selection, get_user_number
 def read_shopping_list_from_file(sl_path, myShop):
 
     # Create an instance of the Customer class by reading the shopping list from the file
-    customer1 = ShopClases.Customer(sl_path)
+    customer1 = Customer(sl_path)
 
     # Print customer and shop states before the transaction
     print("\nShop and the Customer pre-transaction: \n")
     print(myShop)
     print(customer1)
+
+    # Pause to give user chance to read Customer and Shop states before the transaction
+    input("Press ENTER to finilize the sale")
 
     # Perform the sales transaction
     myShop.performSales(customer1)
@@ -33,14 +36,7 @@ def read_shopping_list_from_file(sl_path, myShop):
     print(myShop)
 
 
-def live_mode(myShop):
-
-    Live_shop_options = {
-        3: 'Ask for product',
-        4: 'Check the shopping cart',
-        5: 'Pay for items',
-        0: 'Exit'
-    }
+def live_mode(myShop, Live_shop_options):
 
     # Clear the console
     os.system('cls')
@@ -49,7 +45,7 @@ def live_mode(myShop):
     customer_name = input("Please enter the Customer name: ")
     customer_budget = get_user_number('Please enter the Customer budget: ', '\nPlease input a number')
 
-    liveCustomer = ShopClases.Customer(name=customer_name, budget=customer_budget)
+    liveCustomer = Customer(name=customer_name, budget=customer_budget)
 
 
     while True:
@@ -115,14 +111,10 @@ def live_mode(myShop):
 if __name__ == "__main__":
 
     # Create an instance of the Shop class
-    myShop = ShopClases.Shop("stock.csv", "Exceptions.csv")
+    myShop = Shop("stock.csv", "Exceptions.csv")
 
     # define the options for the menu to be displayed for the user
-    main_menu_options = {
-        1: 'Read Shopping list from file',
-        2: 'Live mode',
-        0: 'Exit'
-    }
+    main_menu_options, Live_shop_options = defineMenuChoices()
 
     # display the user Menu until 0 is selected
     while True:   
@@ -140,7 +132,7 @@ if __name__ == "__main__":
             input("Press enter to continue...")
 
         elif user_choice == 2:
-            live_mode(myShop)
+            live_mode(myShop, Live_shop_options)
             #input("Press enter to continue...")          
 
         elif user_choice==0:
