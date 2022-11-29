@@ -11,7 +11,11 @@ from ShopErrors import BudgetTooLowError
 
 def create_and_stock_shop(path):
 
-    shop={}
+    # define a shop as a dictionary
+    shop={
+        "cash": 0, 
+        "products":[]
+        }
 
     with open(path) as stock_file:
         csv_reader = csv.reader(stock_file, delimiter=',')
@@ -19,7 +23,7 @@ def create_and_stock_shop(path):
         first_row = next(csv_reader)
         shop["cash"]=float(first_row[0])
 
-        shop["products"] = []
+        #shop["products"] = []
 
         for row in csv_reader:
 
@@ -35,7 +39,6 @@ def create_and_stock_shop(path):
 
 def read_customer(csv_path):
 
-    customer={}
 
     with open(csv_path) as stock_file:
 
@@ -43,17 +46,21 @@ def read_customer(csv_path):
 
         first_row = next(csv_reader)
 
-        customer["name"]=first_row[0]
-        customer["cash"]=float(first_row[1])
-
-        customer["shopping_list"] = []
+        # define the customer dictionary
+        customer={
+            "name" : first_row[0],
+            "cash": float(first_row[1]),
+            "payment_due": 0,
+            "shopping_list": [],
+            "shopping_basket": []
+        }
 
         for row in csv_reader:
 
-            product={}
-
-            product["name"] = row[0]
-            product["qty"] = int(row[1])
+            product={
+                "name" : row[0],
+                "qty" : int(row[1]),
+            }
 
             customer["shopping_list"].append(product)
 
@@ -74,21 +81,66 @@ def print_shop(s):
 
 def print_customer(cust):
 
-    # keep tally of the total cost of all the products in the shoppibg list
-    total_cost = 0
-
     print("\n{} wants to buy: ".format(cust["name"]))
     #print("Name: {}, Cash: {}".format(cust["name"], cust["cash"]))
 
+    # 'i' will be used as the shopping list counter
+    i = 0
+
     print("Shopping list:")
-    for product in cust["shopping_list"]:
-        print("NAME: {},  REQUIRED QUANTIT: {}".format(product["name"], product["qty"]))
+    for product in cust["shopping_basket"]:
 
-    rest = cust["cash"] - total_cost
+        #print(cust["shopping_list"][0]['qty'])
+        req_qty = cust["shopping_list"][i]['qty']
+
+        print("NAME: {},  PRICE: €{:.2f}, REQUIRED QUANTITY: {:3d}, IN THE BASKET: {:3d}".format(product["name"], product["price"], req_qty, product["qty"]))
+
+        # increase the shopping basket counter
+        i+=1
+
+    rest = cust["cash"] - customer["payment_due"]
     print("------------------------------------------")
-    print("The total cost would be: €{:.2f}, he would have €{:.2f} left".format(total_cost, rest))   
+    print("The total cost would be: €{:.2f}, he would have €{:.2f} left".format(customer["payment_due"], rest))   
 
 
+# function to look for items from the customre shopping list in the shops stock,
+# putting found items to the shopping basket and calculating the total cost
+def fill_shopping_basket(customer, shop):
+
+    # keep tally of the total cost of all the products in the shoppibg list
+    payment_due = 0
+
+    # Loop over the customers shopping list
+    for list_item in customer["shopping_list"]:
+        # loop over the products in the shops stock
+        for stock_item in shop["products"]:
+
+            # If product from shopping list is found in the shops stock, put it in the basket
+            if list_item["name"] == stock_item["name"]:
+                
+                # make sure shop has enough stock to fulfill the order
+                if stock_item["qty"]>=list_item["qty"]:
+                    qty = list_item["qty"]
+                else:
+                # if it doesn't, put in the basket whatever is left in stock
+                    qty = stock_item["qty"]
+
+                payment_due += qty*stock_item["price"]
+
+                # Create a basket item
+                basket_item= {
+                "name" : list_item["name"],
+                "qty" : qty,
+                "price": stock_item["price"]
+                }
+
+                # put the required amount of selected product into the shopping basket
+                customer["shopping_basket"].append(basket_item)
+    
+    # assign the payment_due in customer dict with sum of the values of items in the shopping basket
+    customer["payment_due"] = payment_due
+
+    return customer
 
 # main for function call
 if __name__ == "__main__":
@@ -118,11 +170,16 @@ if __name__ == "__main__":
         # Choice 1: Read shopping list from file
         if user_choice == 1:            
 
+            # Read the customre shopping list from the file
             customer = read_customer(customer_csv_path)
+
+            # fill customers basket based on the shopping list and available stock in shop
+            customer = fill_shopping_basket(customer, myShop)
 
             print("\nShop and the Customer pre-transaction:\n")
             print_shop(myShop)
-            print_customer(customer)
+            print_customer(customer)            
+
             # Pause to give user chance to read Customer and Shop states before the transaction
             input("Press ENTER to finilize the sale")
 
