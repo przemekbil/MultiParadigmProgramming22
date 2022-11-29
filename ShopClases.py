@@ -1,12 +1,5 @@
 import csv
-
-# Define the Custom Error Classes
-# from https://www.programiz.com/python-programming/user-defined-exception
-class NotEnoughStockError(Exception):
-    pass
-
-class BudgetTooLowError(Exception):
-    pass
+from ShopErrors import NotEnoughStockError, BudgetTooLowError
 
 # defining the Product class
 # This class will describe a product in the shop

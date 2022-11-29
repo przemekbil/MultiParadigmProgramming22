@@ -1,6 +1,7 @@
 # Import custom Shop and Customer classes
 import ShopClases
 import os
+from ShopErrors import BudgetTooLowError
 
 # Re-used from 3rd semester Algorithms module
 # Inspired by https://computinglearner.com/how-to-create-a-menu-for-a-python-console-application/
@@ -141,8 +142,9 @@ def live_mode(myShop):
                 os.system('cls')
                 myShop.performSales(liveCustomer)
                 print(myShop)
-                print(liveCustomer)  
-            except ShopClases.BudgetTooLowError:
+                print(liveCustomer)
+                input("Press ENTER to continue")
+            except BudgetTooLowError:
                 print("\nERROR: The customer has insufficient funds to complete this transaction!\n")
                 input("Press ENTER to continue")
             # Print customer and shop states after the transaction
