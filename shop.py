@@ -83,16 +83,38 @@ def print_shop(s):
 
 def print_customer(cust):
 
-    print("\n{} wants to buy: ".format(cust["name"]))
+    # variable to count all the products in the basket
+    baset_qty = 0
 
+    # variable to count the cost of purchased items
+    payed = 0
+
+    print("\n{} has €{:.2f} in cash. ".format(cust["name"], cust["cash"]))
     print("Shopping list:")
     for product in cust["shopping_list"]:
 
-        print("NAME: {},  PRICE: €{:.2f}, REQUIRED QUANTITY: {:3d}, IN THE BASKET: {:3d}".format(product["name"], product["price"], product["qty"], product["basket_qty"]))
+        print("NAME: {},  PRICE: €{:.2f}, REQUIRED QUANTITY: {:3d}, IN THE BASKET: {:3d}, IN THE BAG: {:3d}".format(
+            product["name"], 
+            product["price"], 
+            product["qty"], 
+            product["basket_qty"],
+            product["bag_qty"]
+            )
+        )
 
-    rest = cust["cash"] - customer["payment_due"]
+        # Sum up all the products in the basket
+        baset_qty += product["basket_qty"]
+
+        # calculat ethe total cost of items purchased
+        payed += product["bag_qty"]*product["price"]
+
+    # print the mesage
     print("------------------------------------------")
-    print("The total cost would be: €{:.2f}, he would have €{:.2f} left".format(customer["payment_due"], rest))
+    if baset_qty> 0:
+        rest = cust["cash"] - customer["payment_due"]
+        print("The total cost would be: €{:.2f}, he would have €{:.2f} left\n".format(customer["payment_due"], rest))
+    else:
+        print("The total cost of purchased items: €{:.2f}. There is €{:.2f} left\n".format(payed, customer["cash"]))
 
 # method to save all exceptions to csv file
 def addToExceptionsFiles(ef_path, msg):
@@ -218,7 +240,10 @@ if __name__ == "__main__":
         user_choice = get_user_selection('Enter your choice: ', '\nPlease input a number')
 
         # Choice 1: Read shopping list from file
-        if user_choice == 1:            
+        if user_choice == 1:
+
+            # Clear the console
+            os.system('cls')            
 
             # Read the customre shopping list from the file
             customer = read_customer(customer_csv_path)
@@ -232,10 +257,14 @@ if __name__ == "__main__":
 
             # Pause to give user chance to read Customer and Shop states before the transaction
             input("Press ENTER to finilize the sale")
+            # Clear the console
+            os.system('cls')
 
             finilize_transaction(customer, myShop, exceptions_csv_path)
 
             print("\nShop and the Customer post-transaction:\n")
+            print_shop(myShop)
+            print_customer(customer) 
 
             input("Press enter to continue...")
 
