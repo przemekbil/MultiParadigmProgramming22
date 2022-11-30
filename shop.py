@@ -212,6 +212,80 @@ def finilize_transaction(customer, shop, ef_path):
     # return changed customer and shop variables
     return customer, shop
 
+
+def live_shop_mode(shop, live_menu):
+
+    os.system('cls')
+    print("Live mode shop")
+
+    customer_name = input("Please enter the Customer name: ")
+    customer_budget = get_user_number('Please enter the Customer budget: ', '\nPlease input a number')
+
+    liveCustomer = {
+        "name" : customer_name,
+        "cash": customer_budget,
+        "payment_due": 0,
+        "shopping_list": []
+    }
+
+    while True:
+        # Clear the console
+        os.system('cls')
+        # Display Menu       
+        display_menu(live_menu, 1)
+        # Get users choice
+        user_choice = get_user_selection('Enter your choice: ', '\nPlease input a number')
+
+        if user_choice == 3:
+            # Ask the user for th eproduct name
+            prod_name = input("Please enter the product name: ")
+
+            available_qty = 0
+            unit_price = 0
+
+            # Check if product is found in Shops stock
+            for product in shop["products"]:
+
+                if product["name"]  == prod_name:
+                    available_qty = product["qty"]
+                    unit_price = product["price"]
+                    break 
+
+            
+            if available_qty== 0:
+                print("The Shop doesn't have {} in stock".format(prod_name))
+            else:
+                print("The Shop has {} units of {} in stock. The unit price is €{} ".format(available_qty, prod_name, unit_price ))
+                req_amount = get_user_selection("Please specified the required amount: ", "'\nPlease input a whole number'")
+
+                # Keep asking the user for the new amount until it's equal or smaller than the stock
+                # Selecting 0 will cancel the order
+                while req_amount > available_qty:
+                    req_amount = get_user_selection("The shop doesn't have sufficient stock to fulfill this order. Please enter amount less or equal to {} or 0 to cancel: ".format(available_qty),
+                     "'\nPlease input a whole number'")
+
+                product={
+                    "name" : prod_name,
+                    "qty" : req_amount,
+                    "price": unit_price,
+                    "basket_qty": 0,
+                    "bag_qty": 0
+                }
+
+                liveCustomer["shopping_list"].append(product)
+                #print("You requested for {} units of {} which will cost {}. Do you want to coninue?".format(req_amount, prod_name, shopStockItem.getCost()))         
+
+            
+            # Ask the Shop for the prices and stock level of required product
+            # shopStockItem = myShop.checkStockByName(prod_name)
+
+        elif user_choice == 0:
+            print("Exiting to Main Menu")
+            break
+        else:
+            print("\n{} is not a vlid option menu!\n".format(user_choice))             
+
+
 # main for function call
 if __name__ == "__main__":
 
@@ -268,6 +342,10 @@ if __name__ == "__main__":
 
             input("Press enter to continue...")
 
+        # Choice 1: Read shopping list from file
+        if user_choice == 2:
+            live_shop_mode(myShop, live_menu)
+        
         # Choice 0: Exit the program
         elif user_choice==0:
             print("Exiting")
