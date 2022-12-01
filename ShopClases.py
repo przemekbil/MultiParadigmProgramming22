@@ -96,13 +96,21 @@ class ShoppingListItem(ProductStock):
     def changeBasketQty(self, qty):
         self.basket_qty += qty
 
+
+    # if payment was successfull, move items form the shopping basket to customers bag
+    def pack_purchased_items(self):
+        self.bag_qty = self.basket_qty
+        self.basket_qty = 0   
+
     #defining function to get the cost of products in the basket
     # if there are no products in the basket, get price of products in the shopping list
     def getCost(self):
-        if self.basket_qty == 0:
-            return super.getCost()
+        if self.basket_qty > 0:
+            cost = self.getUnitPrice() * self.basket_qty
         else:
-            return self.getUnitPrice() * self.basket_qty
+            cost = self.getUnitPrice() * self.bag_qty
+
+        return cost
 
 # Define the Customer class
 class Customer:
@@ -115,7 +123,7 @@ class Customer:
         self.shopping_list = []
 
         # variable to count all the products in the basket
-        self.baset_qty = 0
+        self.basket_qty = 0
 
         # variable to count the cost of purchased items
         self.payed = 0        
@@ -151,8 +159,7 @@ class Customer:
         # Loop over the customers shopping list. Filter shopping list for products that have basket_qty==0
         # Filter as per https://stackoverflow.com/questions/29051573/python-filter-list-of-dictionaries-based-on-key-value
         # The filtering is done to loop only over new products (products not in the basket yet)
-        #for list_item in list(filter(lambda d: d['basket_qty'] in [0], self.shopping_list)):
-        for list_item in self.shopping_list:
+        for list_item in list(filter(lambda d: d.basket_qty in [0], self.shopping_list)):
             # loop over the products in the shops stock
             for stock_item in shop.stock:
 
@@ -173,7 +180,7 @@ class Customer:
                         addToExceptionsFiles(ef_path, err_msg)
 
                     # keep a tally of sum of all the products in the basket
-                    self.baset_qty += qty
+                    self.basket_qty += qty
                     
                     # Remove required qty from the shops stock
                     stock_item.changeQty(-qty)
@@ -184,19 +191,6 @@ class Customer:
                     # Assign the price 
                     list_item.setUnitPrice(stock_item.getUnitPrice())
 
-        # keep tally of the total cost of all the products in the shopping list
-        payment_due = 0
-
-        # Sum all the products in the baskets
-        for basket_item in self.shopping_list:
-            # calculate full amount due for all the available items
-            payment_due += basket_item.basket_qty * basket_item.getUnitPrice()
-        
-        # assign the payment_due in customer dict with sum of the values of items in the shopping basket
-        self.payment_due = payment_due
-
-
-        return self, shop
     
     # Add product to the shopping list (shopping cart)
     # class Customer
@@ -233,17 +227,14 @@ class Customer:
     # If the funds are sufficient, Customer budget is decreased by the cost of the items 
     # If the budget is too low, BudgetTooLowError is raised
     # class Customer 
-    def payForItem(self, shoppingListItem):
+    def payForItem(self, amountDue, shop):
 
-        prePayBudget = self.budget
-
-        if self.budget >= shoppingListItem.getCost():
-            self.budget -= shoppingListItem.getCost()
-
+        if self.budget >= amountDue:
+            self.budget -= amountDue
+            shop.acceptPayment(amountDue)
         else:
             raise BudgetTooLowError
 
-        return prePayBudget - self.budget       
     
     # Print customer function
     # class Customer
@@ -265,10 +256,10 @@ class Customer:
             # otherwise, print the cost of the item
                 str += " COST: €{:.2f}".format(cost)
 
-        if self.baset_qty> 0:
+        if self.basket_qty> 0:
             str += "\nThe total cost would be: €{:.2f}, he would have €{:.2f} left\n".format(self.getOrder_cost(), self.budget-self.getOrder_cost())
         else:
-            str += "\nhe total cost of purchased items: €{:.2f}. There is €{:.2f} left\n".format(self.getOrder_cost(), self.budget)
+            str += "\nThe total cost of purchased items: €{:.2f}. There is €{:.2f} left\n".format(self.getOrder_cost(), self.budget)
 
         return str 
 
@@ -309,6 +300,9 @@ class Shop:
     def getStock(self):
         return self.stock
 
+    def acceptPayment(self, payment):
+        self.cash += payment
+
     # Method to search Shops stock by the product name
     # If product is found, Unit price and stock Qty is returned
     # If no product of that name is found, 0,0 is returned
@@ -323,54 +317,42 @@ class Shop:
         return ProductStock(Product(searched_name, 0), 0)
 
     # Define function to perform the sales transaction
-    def performSales(self, customer):
+    def performSales(self, customer, ef_path):
 
         # Sum cost of all items to clalculate the total transaction cost
         # transactionCost = 0
 
         # loop over the customers shopping list (array of ShoppingListItem Class Objects)
-        for shopping_list_item in customer.getShoppingList():            
-            
-            # Make sure that the product has not been bought yet
-            if not(shopping_list_item.isAfterTransaction()):
+        for basket_item in customer.getShoppingList():
 
-                # find the matching product in the Shops stock (array of ProductStock Class Objects)
-                for stock_item in self.stock:            
-                    # check if product name on the shopping list matches name in the stock
-                    if (shopping_list_item.getName() == stock_item.getName()):
 
-                        # if it matches, get its price and assign it to the price of the items on ths shopping list
-                        shopping_list_item.getProduct().setPrice(stock_item.getUnitPrice())
+            # loop until items are in the shopping basket
+            while basket_item.basket_qty > 0:
 
-                        initialStock = stock_item.getQty()
+                # attempt to pay for the items. If customer has not enough cash, error will be raised
+                try:
+                     customer.payForItem(basket_item.getCost(), self)
+                     # if payment was successfull, move items form the shopping basket to customers bag
+                     basket_item.pack_purchased_items()
 
-                        # Get the required product qty form the shopping list
-                        askedSalesQty = shopping_list_item.getQty()
+                except BudgetTooLowError:
+                    err_msg = "{} has not enough money to pay for {} units of {} worth {:.2f} as he/she has only {:.2f}".format(
+                                    customer.getName(), 
+                                    basket_item.basket_qty, 
+                                    basket_item.getName(), 
+                                    basket_item.getCost(),
+                                    customer.budget  
+                                )
+                    addToExceptionsFiles(ef_path, err_msg)                      
 
-                        # Decrese the Shop stock by the qty from the shopping list
-                        # If not enough in stock, set stock to 0
-                        # Return the actual sale quantity
-                        try:
-                            actualSalesQty = stock_item.changeQty(askedSalesQty)
-                        except NotEnoughStockError:
-                            actualSalesQty = initialStock
-                            addToExceptionsFiles("There is not enough {} in stock. Actual stock: {} / Required Stock {} ".format(shopping_list_item.getName(), actualSalesQty, askedSalesQty))
-
-                        # Set the shopping list to the actual sales quantity
-                        shopping_list_item.setQty(actualSalesQty)         
-
-                                            
-                        # If customer have enough money, pay for the items
-                        try:
-                            self.cash += customer.payForItem(shopping_list_item)
-                        except BudgetTooLowError:
-                            addToExceptionsFiles("{} has not enough money to pay for {} units of {} worth {:.2f} as he/she has only {:.2f}".format(
-                                customer.getName(), actualSalesQty, shopping_list_item.getName(), shopping_list_item.getCost(), customer.budget ))
-
-                            # Roll back on customer and shop stock changes
-                            shopping_list_item.setQty(0)
-                            stock_item.setQty(initialStock)
-
-                            raise BudgetTooLowError                      
-                        
-        customer.setTransactionCompleted()
+                    # remove one item from the basket
+                    basket_item.changeBasketQty(-1)
+                    # find the product in the shop and return one item from the basket back to the shop
+                    for product in self.getStock():
+                        if product.getName() == basket_item.getName():
+                            product.changeQty(1)
+                            break
+        
+        # set the number of items in basket for customer to 0
+        # we know it will be zero, because we'll loop over all the items and execute internal loop until basket_qty is 0
+        customer.basket_qty = 0

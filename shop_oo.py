@@ -131,27 +131,24 @@ if __name__ == "__main__":
             # Create an instance of the Customer class by reading the shopping list from the file
             customer = Customer("customer.csv")
 
-
-            # Check the shops 
-            customer, myShop = customer.fill_shopping_basket(myShop, "Exceptions.csv")            
+            # Fill out the customer's basket 
+            customer.fill_shopping_basket(myShop, "Exceptions.csv")            
 
             # Print customer and shop states before the transaction
             print("\nShop and the Customer pre-transaction: \n")
             print(myShop)
             print(customer)
 
-
-
             # Pause to give user chance to read Customer and Shop states before the transaction
             input("Press ENTER to finilize the sale")
 
             # Perform the sales transaction
-            myShop.performSales(customer)
+            myShop.performSales(customer, "Exceptions.csv")
 
             # Print the states of both objects after the transaction
             print("Shop and the Customer post-transaction: \n")
-            print(customer)
-            print(myShop)           
+            print(myShop)              
+            print(customer)         
 
             input("Press enter to continue...")
 
