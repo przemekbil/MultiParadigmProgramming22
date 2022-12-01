@@ -132,11 +132,11 @@ def addToExceptionsFiles(ef_path, msg):
 # putting found items to the shopping basket and calculating the total cost
 def fill_shopping_basket(customer, shop, ef_path):
 
-    # keep tally of the total cost of all the products in the shoppibg list
-    payment_due = 0
 
-    # Loop over the customers shopping list
-    for list_item in customer["shopping_list"]:
+    # Loop over the customers shopping list. Filter shopping list for products that have basket_qty==0
+    # Filter as per https://stackoverflow.com/questions/29051573/python-filter-list-of-dictionaries-based-on-key-value
+    # The filtering is done to loop only over new products (products not in the basket yet)
+    for list_item in list(filter(lambda d: d['basket_qty'] in [0], customer["shopping_list"])):
         # loop over the products in the shops stock
         for stock_item in shop["products"]:
 
@@ -158,10 +158,16 @@ def fill_shopping_basket(customer, shop, ef_path):
                 # put the required amount of selected product into the shopping basket
                 list_item["basket_qty"] = qty                
 
+                # Assign the price 
                 list_item["price"] = stock_item["price"]
 
-                # calculate full amount due for all the available items
-                payment_due += qty*stock_item["price"]
+    # keep tally of the total cost of all the products in the shopping list
+    payment_due = 0
+
+    # Sum all the products in the baskets
+    for basket_item in customer["shopping_list"]:
+        # calculate full amount due for all the available items
+        payment_due += basket_item["basket_qty"] *basket_item["price"]
     
     # assign the payment_due in customer dict with sum of the values of items in the shopping basket
     customer["payment_due"] = payment_due
@@ -290,7 +296,17 @@ def live_shop_mode(shop, live_menu, ef_path):
 
         elif  user_choice == 5:
             # Clear the console
-            os.system('cls')               
+            os.system('cls')
+
+            # Finilize the transaction
+            finilize_transaction(liveCustomer, shop, exceptions_csv_path)
+
+            # Print the shop and customer states after the transaction
+            print("\nShop and the Customer post-transaction:\n")
+            print_shop(shop)
+            print_customer(liveCustomer) 
+
+            input("Press enter to continue...")                           
 
 
         elif user_choice == 0:
