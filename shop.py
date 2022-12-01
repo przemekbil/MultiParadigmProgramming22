@@ -111,10 +111,10 @@ def print_customer(cust):
     # print the mesage
     print("------------------------------------------")
     if baset_qty> 0:
-        rest = cust["cash"] - customer["payment_due"]
-        print("The total cost would be: €{:.2f}, he would have €{:.2f} left\n".format(customer["payment_due"], rest))
+        rest = cust["cash"] - cust["payment_due"]
+        print("The total cost would be: €{:.2f}, he would have €{:.2f} left\n".format(cust["payment_due"], rest))
     else:
-        print("The total cost of purchased items: €{:.2f}. There is €{:.2f} left\n".format(payed, customer["cash"]))
+        print("The total cost of purchased items: €{:.2f}. There is €{:.2f} left\n".format(payed, cust["cash"]))
 
 # method to save all exceptions to csv file
 def addToExceptionsFiles(ef_path, msg):
@@ -213,7 +213,7 @@ def finilize_transaction(customer, shop, ef_path):
     return customer, shop
 
 
-def live_shop_mode(shop, live_menu):
+def live_shop_mode(shop, live_menu, ef_path):
 
     os.system('cls')
     print("Live mode shop")
@@ -232,7 +232,7 @@ def live_shop_mode(shop, live_menu):
         # Clear the console
         os.system('cls')
         # Display Menu       
-        display_menu(live_menu, 1)
+        display_menu(live_menu, 1, "LIVE SHOP MENU")
         # Get users choice
         user_choice = get_user_selection('Enter your choice: ', '\nPlease input a number')
 
@@ -249,35 +249,49 @@ def live_shop_mode(shop, live_menu):
                 if product["name"]  == prod_name:
                     available_qty = product["qty"]
                     unit_price = product["price"]
-                    break 
+                    break
 
             
             if available_qty== 0:
                 print("The Shop doesn't have {} in stock".format(prod_name))
             else:
-                print("The Shop has {} units of {} in stock. The unit price is €{} ".format(available_qty, prod_name, unit_price ))
+                print("The Shop has {} units of {} in stock. The unit price is €{}\n".format(available_qty, prod_name, unit_price ))
                 req_amount = get_user_selection("Please specified the required amount: ", "'\nPlease input a whole number'")
 
                 # Keep asking the user for the new amount until it's equal or smaller than the stock
                 # Selecting 0 will cancel the order
-                while req_amount > available_qty:
-                    req_amount = get_user_selection("The shop doesn't have sufficient stock to fulfill this order. Please enter amount less or equal to {} or 0 to cancel: ".format(available_qty),
-                     "'\nPlease input a whole number'")
+                #while req_amount > available_qty:
+                #    req_amount = get_user_selection("The shop doesn't have sufficient stock to fulfill this order. Please enter amount less or equal to {} or 0 to cancel: ".format(available_qty),
+                #     "'\nPlease input a whole number'")
 
-                product={
-                    "name" : prod_name,
-                    "qty" : req_amount,
-                    "price": unit_price,
-                    "basket_qty": 0,
-                    "bag_qty": 0
-                }
+                if req_amount > 0:
+                    product={
+                        "name" : prod_name,
+                        "qty" : req_amount,
+                        "price": unit_price,
+                        "basket_qty": 0,
+                        "bag_qty": 0
+                    }
 
-                liveCustomer["shopping_list"].append(product)
-                #print("You requested for {} units of {} which will cost {}. Do you want to coninue?".format(req_amount, prod_name, shopStockItem.getCost()))         
+                    liveCustomer["shopping_list"].append(product)
+                    
+                    # Check the shop's stock and put products in the shopping basket
+                    fill_shopping_basket(liveCustomer, shop, ef_path)
 
             
             # Ask the Shop for the prices and stock level of required product
             # shopStockItem = myShop.checkStockByName(prod_name)
+        elif user_choice == 4:
+            # Clear the console
+            os.system('cls')            
+            print_shop(shop)
+            print_customer(liveCustomer)
+            input("\nPress ENTER to continue")
+
+        elif  user_choice == 5:
+            # Clear the console
+            os.system('cls')               
+
 
         elif user_choice == 0:
             print("Exiting to Main Menu")
@@ -344,7 +358,7 @@ if __name__ == "__main__":
 
         # Choice 1: Read shopping list from file
         if user_choice == 2:
-            live_shop_mode(myShop, live_menu)
+            live_shop_mode(myShop, live_menu, exceptions_csv_path)
         
         # Choice 0: Exit the program
         elif user_choice==0:

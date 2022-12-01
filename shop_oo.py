@@ -52,7 +52,7 @@ def live_mode(myShop, Live_shop_options):
         # Clear the console
         os.system('cls')
         # Display the live shop menu options
-        display_menu(Live_shop_options, 1)
+        display_menu(Live_shop_options, 1, "LIVE SHOP MENU")
         # Get users choice
         user_choice = get_user_selection('Enter your choice: ', '\nPlease input a number')
 
@@ -72,9 +72,9 @@ def live_mode(myShop, Live_shop_options):
 
                 # Keep asking the user for the new amount until it's equal or smaller than the stock
                 # Selecting 0 will cancel the order
-                while req_amount > shopStockItem.getQty():
-                    req_amount = get_user_selection("The shop doesn't have sufficient stock to fulfill this order. Please enter amount less or equal to {} or 0 to cancel: ".format(shopStockItem.getQty()),
-                     "'\nPlease input a whole number'")
+                #while req_amount > shopStockItem.getQty():
+                #    req_amount = get_user_selection("The shop doesn't have sufficient stock to fulfill this order. Please enter amount less or equal to {} or 0 to cancel: ".format(shopStockItem.getQty()),
+                #     "'\nPlease input a whole number'")
 
                 liveCustomer.addItemToShoppingCart(prod_name, req_amount, shopStockItem.getUnitPrice())
                 #print("You requested for {} units of {} which will cost {}. Do you want to coninue?".format(req_amount, prod_name, shopStockItem.getCost()))

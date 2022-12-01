@@ -7,10 +7,11 @@
 
 # Re-used from 3rd semester Algorithms module
 # Inspired by https://computinglearner.com/how-to-create-a-menu-for-a-python-console-application/
-def display_menu(options, level):
+def display_menu(options, level=0, title="MAIN MENU"):
 
     # add empty line before and after the menu
     print()
+    print(title)
     # print the Menu options on the screen
 
     # Add extra spaces depending on the level of the Menu
