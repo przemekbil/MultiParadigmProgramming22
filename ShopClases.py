@@ -50,6 +50,9 @@ class ProductStock:
     def getUnitPrice(self):
         return self.product.getPrice()
 
+    def setUnitPrice(self, price):
+        self.product.setPrice(price)
+
     def getProduct(self):
         return self.product
 
@@ -62,20 +65,8 @@ class ProductStock:
 
     # Change incrementally the stock qty by the asked sales Qty
     def changeQty(self, askedSalesQty):
+        self.quantity += askedSalesQty
 
-        oldQty = self.quantity
-
-        # Decrese the Shop stock by the qty from the shopping list
-        # If not enough in stock, set stock to 0
-        # Return the actual sale quantity
-        if  self.quantity >= askedSalesQty:      
-            self.quantity -= askedSalesQty
-        else:            
-            self.quantity = 0
-            raise NotEnoughStockError("Not enough stock!")
-        
-        # Return the actual sales quantity
-        return oldQty-self.quantity
 
 
     def setQty(self, newQty):
@@ -92,21 +83,26 @@ class ShoppingListItem(ProductStock):
     def __init__(self, product, quantity):
 
         super().__init__(product, quantity)
-        self.afterTransaction = False
-    
-    def isAfterTransaction(self):
-       return self.afterTransaction
+        
+        # Additionaly to the shopping list, the Customer will also use the shopping basket and shopping bag
+        self.basket_qty = 0
+        self.bag_qty = 0
 
     def __repr__(self):
-        if self.afterTransaction:
-            return "{} BOUGHT QUANTITY: {:3d}".format(self.product, self.quantity)
-        else:
-            return "{} REQUIRED QUANTITY: {:3d}".format(self.product, self.quantity)           
 
-    # Override parent class setQty method. This method will be used to set the bought qty (after transaction)
-    def setQty(self, newQty):
-        super().setQty(newQty)
-        self.afterTransaction = True       
+        return "{}, REQUIRED QUANTITY: {:3d}, IN THE BASKET: {:3d}, IN THE BAG: {:3d},".format(self.product, self.quantity, self.basket_qty, self.bag_qty)       
+
+    # function to change the quantity of the product in the basket
+    def changeBasketQty(self, qty):
+        self.basket_qty += qty
+
+    #defining function to get the cost of products in the basket
+    # if there are no products in the basket, get price of products in the shopping list
+    def getCost(self):
+        if self.basket_qty == 0:
+            return super.getCost()
+        else:
+            return self.getUnitPrice() * self.basket_qty
 
 # Define the Customer class
 class Customer:
@@ -115,11 +111,14 @@ class Customer:
     # needs customer name and the budget
     def __init__(self, path="", name="", budget=0):
 
-        # Use this variable to store if the transaction has been completed
-        self.transactionCompleted = False
-
-        # Shopping list: list of Products to buy
+        # Shopping list: list of Products to buy, quantities in shopping basket and shopping bag
         self.shopping_list = []
+
+        # variable to count all the products in the basket
+        self.baset_qty = 0
+
+        # variable to count the cost of purchased items
+        self.payed = 0        
 
         if len(path)==0:
             self.name = name
@@ -141,10 +140,66 @@ class Customer:
                     # Use 'name' to initialize an instance of a Product class
                     p = Product(name)
                     # Use the the instance of Product class and required quantity to initialize and instance of ShoppingListItem class                
-                    self.shopping_list.append(ShoppingListItem(p, quantity)) 
+                    self.shopping_list.append(ShoppingListItem(p, quantity))
 
+
+    # function to look for items from the customre shopping list in the shops stock,
+    # putting found items to the shopping basket and calculating the total cost
+    # class Customer
+    def fill_shopping_basket(self, shop, ef_path):
+
+        # Loop over the customers shopping list. Filter shopping list for products that have basket_qty==0
+        # Filter as per https://stackoverflow.com/questions/29051573/python-filter-list-of-dictionaries-based-on-key-value
+        # The filtering is done to loop only over new products (products not in the basket yet)
+        #for list_item in list(filter(lambda d: d['basket_qty'] in [0], self.shopping_list)):
+        for list_item in self.shopping_list:
+            # loop over the products in the shops stock
+            for stock_item in shop.stock:
+
+                # If product from shopping list is found in the shops stock, put it in the basket
+                if list_item.getName() == stock_item.getName():
+                    
+                    # make sure shop has enough stock to fulfill the order
+                    if stock_item.getQty() >= list_item.getQty():
+                        qty = list_item.getQty()              
+                    else:
+                    # if it doesn't, put in the basket whatever is left in stock
+                        qty = stock_item.getQty() 
+                        err_msg = "There is not enough {} in stock. Actual stock: {} / Required Stock {} ".format(
+                            list_item.getName(), 
+                            qty, 
+                            list_item.quantity
+                            )
+                        addToExceptionsFiles(ef_path, err_msg)
+
+                    # keep a tally of sum of all the products in the basket
+                    self.baset_qty += qty
+                    
+                    # Remove required qty from the shops stock
+                    stock_item.changeQty(-qty)
+
+                    # put the required amount of selected product into the shopping basket
+                    list_item.changeBasketQty(qty)
+
+                    # Assign the price 
+                    list_item.setUnitPrice(stock_item.getUnitPrice())
+
+        # keep tally of the total cost of all the products in the shopping list
+        payment_due = 0
+
+        # Sum all the products in the baskets
+        for basket_item in self.shopping_list:
+            # calculate full amount due for all the available items
+            payment_due += basket_item.basket_qty * basket_item.getUnitPrice()
+        
+        # assign the payment_due in customer dict with sum of the values of items in the shopping basket
+        self.payment_due = payment_due
+
+
+        return self, shop
     
     # Add product to the shopping list (shopping cart)
+    # class Customer
     def addItemToShoppingCart(self, productName, prodQty, prodCost):
 
         p = Product(productName, prodCost)
@@ -152,6 +207,7 @@ class Customer:
 
 
     # function to calculate the total cost of the customers order
+    # class Customer
     def getOrder_cost(self):
         cost = 0
         
@@ -161,21 +217,22 @@ class Customer:
         
         return cost
 
+    # class Customer
     def getName(self):
         return self.name
 
+    #class Customer
     def getShoppingList(self):
         return self.shopping_list
 
+    # class Customer
     def setTransactionCompleted(self):
         self.transactionCompleted = True
-
-    def isTransactionCompleted(self):
-        return self.transactionCompleted
 
     # Method to finilize the transaction
     # If the funds are sufficient, Customer budget is decreased by the cost of the items 
     # If the budget is too low, BudgetTooLowError is raised
+    # class Customer 
     def payForItem(self, shoppingListItem):
 
         prePayBudget = self.budget
@@ -188,12 +245,13 @@ class Customer:
 
         return prePayBudget - self.budget       
     
+    # Print customer function
+    # class Customer
     def __repr__(self):
         
-        if self.isTransactionCompleted():
-            str =  "{} bought:".format(self.name) 
-        else:
-            str =  "{} wants to buy:".format(self.name) 
+
+        str =  "{} has €{:.2f} in cash\n".format(self.name, self.budget)
+        str += "Shopping list: ".format(self.name)
 
         # Loop over the Shopping list and print a total cost of each items
         for item in self.shopping_list:
@@ -207,9 +265,11 @@ class Customer:
             # otherwise, print the cost of the item
                 str += " COST: €{:.2f}".format(cost)
 
-        # add a message describing money left from the Customre budget after the shopping             
-        str +="\n------------------------------------------"
-        str += "\nThe total cost would be: €{:.2f}, he would have €{:.2f} left\n".format(self.getOrder_cost(), self.budget)
+        if self.baset_qty> 0:
+            str += "\nThe total cost would be: €{:.2f}, he would have €{:.2f} left\n".format(self.getOrder_cost(), self.budget-self.getOrder_cost())
+        else:
+            str += "\nhe total cost of purchased items: €{:.2f}. There is €{:.2f} left\n".format(self.getOrder_cost(), self.budget)
+
         return str 
 
 

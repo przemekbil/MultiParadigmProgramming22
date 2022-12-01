@@ -5,14 +5,16 @@
 # Collections of Python functions used by both Shop programs: written using Object Oriented and Procedural paradigms
 
 import csv
+import os
 import datetime
 
 # Re-used from 3rd semester Algorithms module
 # Inspired by https://computinglearner.com/how-to-create-a-menu-for-a-python-console-application/
 def display_menu(options, level=0, title="MAIN MENU"):
 
-    # add empty line before and after the menu
-    print()
+    # Clear the console
+    os.system('cls')
+    # Print the title of the menu
     print(title)
     # print the Menu options on the screen
 

@@ -35,6 +35,8 @@ def read_shopping_list_from_file(sl_path, myShop):
     print(customer1)
     print(myShop)
 
+    return customer1
+
 
 def live_mode(myShop, Live_shop_options):
 
@@ -49,8 +51,7 @@ def live_mode(myShop, Live_shop_options):
 
 
     while True:
-        # Clear the console
-        os.system('cls')
+
         # Display the live shop menu options
         display_menu(Live_shop_options, 1, "LIVE SHOP MENU")
         # Get users choice
@@ -119,8 +120,6 @@ if __name__ == "__main__":
     # display the user Menu until 0 is selected
     while True:   
 
-        # Clear the console
-        os.system('cls')
         # Display Menu       
         display_menu(main_menu_options, 0)
         # Get users choice
@@ -128,7 +127,32 @@ if __name__ == "__main__":
 
         # Choice 1: Read shopping list from file
         if user_choice == 1:
-            read_shopping_list_from_file("customer.csv", myShop)
+
+            # Create an instance of the Customer class by reading the shopping list from the file
+            customer = Customer("customer.csv")
+
+
+            # Check the shops 
+            customer, myShop = customer.fill_shopping_basket(myShop, "Exceptions.csv")            
+
+            # Print customer and shop states before the transaction
+            print("\nShop and the Customer pre-transaction: \n")
+            print(myShop)
+            print(customer)
+
+
+
+            # Pause to give user chance to read Customer and Shop states before the transaction
+            input("Press ENTER to finilize the sale")
+
+            # Perform the sales transaction
+            myShop.performSales(customer)
+
+            # Print the states of both objects after the transaction
+            print("Shop and the Customer post-transaction: \n")
+            print(customer)
+            print(myShop)           
+
             input("Press enter to continue...")
 
         elif user_choice == 2:

@@ -104,7 +104,7 @@ def print_customer(cust):
         # Sum up all the products in the basket
         baset_qty += product["basket_qty"]
 
-        # calculat ethe total cost of items purchased
+        # calculate the total cost of items purchased
         payed += product["bag_qty"]*product["price"]
 
     # print the mesage
@@ -227,8 +227,6 @@ def live_shop_mode(shop, live_menu, ef_path):
     }
 
     while True:
-        # Clear the console
-        os.system('cls')
         # Display Menu       
         display_menu(live_menu, 1, "LIVE SHOP MENU")
         # Get users choice
@@ -328,8 +326,6 @@ if __name__ == "__main__":
     # display the user Menu until 0 is selected
     while True:   
 
-        # Clear the console
-        os.system('cls')
         # Display Menu       
         display_menu(main_menu, 0)
         # Get users choice
