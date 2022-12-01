@@ -6,6 +6,7 @@
 
 import csv
 from ShopErrors import NotEnoughStockError, BudgetTooLowError
+from ShopFunctions import addToExceptionsFiles
 
 # defining the Product class
 # This class will describe a product in the shop
@@ -248,18 +249,6 @@ class Shop:
     def getStock(self):
         return self.stock
 
-    # method to save all exceptions to csv file
-    def addToExceptionsFiles(self, msg):
-
-        # as per https://www.pythontutorial.net/python-basics/python-write-csv-file/ and 
-        # https://stackoverflow.com/questions/13203868/how-to-write-to-csv-and-not-overwrite-past-text 
-        with open(self.exceptionsFilePath, 'a', encoding='UTF8', newline='') as f:
-            # create the csv writer
-            writer = csv.writer(f)
-            # as per https://stackoverflow.com/questions/1816880/why-does-csvwriter-writerow-put-a-comma-after-each-character
-            writer.writerow([msg])
-
-
     # Method to search Shops stock by the product name
     # If product is found, Unit price and stock Qty is returned
     # If no product of that name is found, 0,0 is returned
@@ -305,7 +294,7 @@ class Shop:
                             actualSalesQty = stock_item.changeQty(askedSalesQty)
                         except NotEnoughStockError:
                             actualSalesQty = initialStock
-                            self.addToExceptionsFiles("There is not enough {} in stock. Actual stock: {}, required Stock {} ".format(shopping_list_item.getName(), actualSalesQty, askedSalesQty))
+                            addToExceptionsFiles("There is not enough {} in stock. Actual stock: {} / Required Stock {} ".format(shopping_list_item.getName(), actualSalesQty, askedSalesQty))
 
                         # Set the shopping list to the actual sales quantity
                         shopping_list_item.setQty(actualSalesQty)         
@@ -315,7 +304,7 @@ class Shop:
                         try:
                             self.cash += customer.payForItem(shopping_list_item)
                         except BudgetTooLowError:
-                            self.addToExceptionsFiles("{} has not enough money to pay for {} units of {} worth {:.2f} as he/she has only {:.2f}".format(
+                            addToExceptionsFiles("{} has not enough money to pay for {} units of {} worth {:.2f} as he/she has only {:.2f}".format(
                                 customer.getName(), actualSalesQty, shopping_list_item.getName(), shopping_list_item.getCost(), customer.budget ))
 
                             # Roll back on customer and shop stock changes

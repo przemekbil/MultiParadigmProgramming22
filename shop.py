@@ -6,7 +6,7 @@
 
 import csv
 import os
-from ShopFunctions import display_menu, get_user_selection, get_user_number, defineMenuChoices
+from ShopFunctions import display_menu, get_user_selection, get_user_number, defineMenuChoices, addToExceptionsFiles
 from ShopErrors import BudgetTooLowError, NotEnoughStockError
 
 def create_and_stock_shop(path):
@@ -22,8 +22,6 @@ def create_and_stock_shop(path):
 
         first_row = next(csv_reader)
         shop["cash"]=float(first_row[0])
-
-        #shop["products"] = []
 
         for row in csv_reader:
 
@@ -74,6 +72,7 @@ def print_product(p):
     print("NAME: {}, PRICE: €{:.2f}, STOCK QUANTITY: {:3d}".format(p["name"], p["price"], p["qty"]))
     pass
 
+# Function to print the current state of the shop
 def print_shop(s):
     print("Shop has €{:.2f} in cash".format(s["cash"]))
     print("Stock:")
@@ -116,17 +115,6 @@ def print_customer(cust):
     else:
         print("The total cost of purchased items: €{:.2f}. There is €{:.2f} left\n".format(payed, cust["cash"]))
 
-# method to save all exceptions to csv file
-def addToExceptionsFiles(ef_path, msg):
-
-    # as per https://www.pythontutorial.net/python-basics/python-write-csv-file/ and 
-    # https://stackoverflow.com/questions/13203868/how-to-write-to-csv-and-not-overwrite-past-text 
-    with open(ef_path, 'a', encoding='UTF8', newline='') as f:
-        # create the csv writer
-        writer = csv.writer(f)
-        # as per https://stackoverflow.com/questions/1816880/why-does-csvwriter-writerow-put-a-comma-after-each-character
-        writer.writerow([msg])   
-
 
 # function to look for items from the customre shopping list in the shops stock,
 # putting found items to the shopping basket and calculating the total cost
@@ -149,7 +137,11 @@ def fill_shopping_basket(customer, shop, ef_path):
                 else:
                 # if it doesn't, put in the basket whatever is left in stock
                     qty = stock_item["qty"]
-                    err_msg = "There is not enough {} in stock. Actual stock: {}, required Stock {} ".format(list_item["name"] , qty, list_item["qty"])
+                    err_msg = "There is not enough {} in stock. Actual stock: {} / Required Stock {} ".format(
+                        list_item["name"] , 
+                        qty, 
+                        list_item["qty"]
+                        )
                     addToExceptionsFiles(ef_path, err_msg)
                 
                 # Remove required qty from the shops stock

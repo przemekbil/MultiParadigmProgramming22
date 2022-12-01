@@ -4,6 +4,8 @@
 
 # Collections of Python functions used by both Shop programs: written using Object Oriented and Procedural paradigms
 
+import csv
+import datetime
 
 # Re-used from 3rd semester Algorithms module
 # Inspired by https://computinglearner.com/how-to-create-a-menu-for-a-python-console-application/
@@ -79,3 +81,16 @@ def defineMenuChoices():
     }
 
     return main, live
+
+# method to save all exceptions to csv file
+def addToExceptionsFiles(ef_path, msg):
+
+    # as per https://www.pythontutorial.net/python-basics/python-write-csv-file/ and 
+    # https://stackoverflow.com/questions/13203868/how-to-write-to-csv-and-not-overwrite-past-text 
+    with open(ef_path, 'a', encoding='UTF8', newline='') as f:
+        # create the csv writer
+        writer = csv.writer(f, delimiter=",")
+        # Add a space at the beggining of the error message and remove the " character
+        msg = ' ' + msg
+        # as per https://stackoverflow.com/questions/1816880/why-does-csvwriter-writerow-put-a-comma-after-each-character        
+        writer.writerow([datetime.datetime.now(), msg])
