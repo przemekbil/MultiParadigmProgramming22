@@ -124,7 +124,7 @@ def fill_shopping_basket(customer, shop, ef_path):
     # Loop over the customers shopping list. Filter shopping list for products that have basket_qty==0
     # Filter as per https://stackoverflow.com/questions/29051573/python-filter-list-of-dictionaries-based-on-key-value
     # The filtering is done to loop only over new products (products not in the basket yet)
-    for list_item in list(filter(lambda d: d['basket_qty'] in [0], customer["shopping_list"])):
+    for list_item in list(filter(lambda d: d['basket_qty'] + d['bag_qty'] == 0, customer["shopping_list"])):
         # loop over the products in the shops stock
         for stock_item in shop["products"]:
 
@@ -165,7 +165,6 @@ def fill_shopping_basket(customer, shop, ef_path):
     customer["payment_due"] = payment_due
 
     return customer, shop
-
 
 
 def finilize_transaction(customer, shop, ef_path):

@@ -71,14 +71,11 @@ def live_mode(myShop, Live_shop_options):
                 print("The Shop has {} units of {} in stock. The unit price is €{} ".format(shopStockItem.getQty(), prod_name, shopStockItem.getUnitPrice()))
                 req_amount = get_user_selection("Please specified the required amount: ", "'\nPlease input a whole number'")
 
-                # Keep asking the user for the new amount until it's equal or smaller than the stock
-                # Selecting 0 will cancel the order
-                #while req_amount > shopStockItem.getQty():
-                #    req_amount = get_user_selection("The shop doesn't have sufficient stock to fulfill this order. Please enter amount less or equal to {} or 0 to cancel: ".format(shopStockItem.getQty()),
-                #     "'\nPlease input a whole number'")
+                # Add new shopping list item
+                liveCustomer.addItemToShoppingList(prod_name, shopStockItem.getUnitPrice(), req_amount)
 
-                liveCustomer.addItemToShoppingCart(prod_name, req_amount, shopStockItem.getUnitPrice())
-                #print("You requested for {} units of {} which will cost {}. Do you want to coninue?".format(req_amount, prod_name, shopStockItem.getCost()))
+                # Put available products into the shopping basket
+                liveCustomer.fill_shopping_basket(myShop, "Exceptions.csv")
 
                 
 
@@ -93,7 +90,9 @@ def live_mode(myShop, Live_shop_options):
             try:
                 # Clear the console
                 os.system('cls')
-                myShop.performSales(liveCustomer)
+                # Perform the sales transaction
+                myShop.performSales(liveCustomer, "Exceptions.csv")
+                # Print the state of Customer and Shop after the transaction
                 print(myShop)
                 print(liveCustomer)
                 input("Press ENTER to continue")

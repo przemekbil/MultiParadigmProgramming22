@@ -79,3 +79,8 @@ Time stamp, Error Message
 2022-12-01 18:55:13.641284, John has not enough money to pay for 3 units of Bread worth 2.10 as he/she has only 0.20
 2022-12-01 18:55:13.647268, John has not enough money to pay for 2 units of Bread worth 1.40 as he/she has only 0.20
 2022-12-01 18:55:13.654249, John has not enough money to pay for 1 units of Bread worth 0.70 as he/she has only 0.20
+2022-12-02 12:36:38.764891, There is not enough Bin Bags in stock. Actual stock: 4 / Required Stock 10 
+2022-12-02 12:40:24.204460, There is not enough Bin Bags in stock. Actual stock: 4 / Required Stock 5 
+2022-12-02 12:40:44.211112, Bob has not enough money to pay for 4 units of Bin Bags worth 10.00 as he/she has only 3.00
+2022-12-02 12:40:44.219089, Bob has not enough money to pay for 3 units of Bin Bags worth 7.50 as he/she has only 3.00
+2022-12-02 12:40:44.227068, Bob has not enough money to pay for 2 units of Bin Bags worth 5.00 as he/she has only 3.00

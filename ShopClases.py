@@ -150,6 +150,9 @@ class Customer:
                     # Use the the instance of Product class and required quantity to initialize and instance of ShoppingListItem class                
                     self.shopping_list.append(ShoppingListItem(p, quantity))
 
+    #def itemsNotInBasketOrBag(sl):
+
+
 
     # function to look for items from the customre shopping list in the shops stock,
     # putting found items to the shopping basket and calculating the total cost
@@ -158,8 +161,8 @@ class Customer:
 
         # Loop over the customers shopping list. Filter shopping list for products that have basket_qty==0
         # Filter as per https://stackoverflow.com/questions/29051573/python-filter-list-of-dictionaries-based-on-key-value
-        # The filtering is done to loop only over new products (products not in the basket yet)
-        for list_item in list(filter(lambda d: d.basket_qty in [0], self.shopping_list)):
+        # The filtering is done to loop only over new products (products not yet in the basket or the shopping bag)
+        for list_item in list(filter(lambda d: d.basket_qty + d.bag_qty == 0 , self.shopping_list)):
             # loop over the products in the shops stock
             for stock_item in shop.stock:
 
@@ -191,13 +194,12 @@ class Customer:
                     # Assign the price 
                     list_item.setUnitPrice(stock_item.getUnitPrice())
 
-    
-    # Add product to the shopping list (shopping cart)
-    # class Customer
-    def addItemToShoppingCart(self, productName, prodQty, prodCost):
 
-        p = Product(productName, prodCost)
-        self.shopping_list.append(ShoppingListItem(p, prodQty))
+    def addItemToShoppingList(self, prodName, unitPrice, quantity):
+        # Add new product to the shopping list
+        p = Product(prodName, unitPrice)
+        self.shopping_list.append(ShoppingListItem(p, quantity))
+
 
 
     # function to calculate the total cost of the customers order
