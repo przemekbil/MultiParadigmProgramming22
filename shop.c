@@ -17,7 +17,9 @@ struct ProductStock{
 struct Customer{
     char* name;
     double budget;
-    struct ProductStock shoppingList[20];    
+    struct ProductStock shoppingList[20];
+    struct ProductStock shoppingBasket[20];
+    struct ProductStock shoppingBag[20];
     int index;
 };
 
@@ -28,6 +30,12 @@ struct Shop
     int index;
 };
 
+struct transactionParties
+{
+    struct Shop shop;
+    struct Customer customer;
+};
+
 void printProduct(struct Product p){
     printf("NAME: %s, PRICE:  €%.2f", p.name, p.price);
 }
@@ -36,19 +44,23 @@ void printCustomer(struct Customer c){
 
     double totalCost = 0;
 
-    printf("----------------\n");
-    printf("CUSTOMER NAME: %s \nCUSTOMERS BUDGET:  %.2f\n", c.name, c.budget);
+    printf("\n");
+    printf("%s has €%.2f in cash\n", c.name, c.budget);
 
     for(int i=0; i<c.index; i++){
-        printf("\nProduct nr %d\n", i+1);
-        printProduct(c.shoppingList[i].product);
-        printf("NUMBER OF ITEMS: %d\n", c.shoppingList[i].quatity);
-        double cost = c.shoppingList[i].product.price*c.shoppingList[i].quatity;
+        printProduct(c.shoppingBasket[i].product);
+ 
+        printf(", REQUIRED QUANTITY: %d", c.shoppingList[i].quatity);
+        printf(", IN THE BASKET: %d", c.shoppingBasket[i].quatity);
+        printf(", IN THE BAG: %d\n", c.shoppingBag[i].quatity);
+        double cost = c.shoppingBasket[i].product.price*c.shoppingBasket[i].quatity;
         totalCost +=cost;
-        printf("Cost of this order is %.2f\n\n", cost);
+        //printf("Cost of this order is %.2f\n\n", cost);
     }
 
-    printf("Total cost of %d orders is %.2f\n", c.index, totalCost);
+    double rest = c.budget - totalCost;
+    printf("------------------------------------------\n");
+    printf("The total cost would be €%.2f, customer would have €%.2f left\n\n", totalCost, rest);
 }
 
 struct Customer readCustomerFromFile(char *custFile)
@@ -145,7 +157,7 @@ struct Shop createAndStockShop(char *stockFile){
         char *q = strtok(NULL, ",");
 
         int quantity = atoi(q);
-        float price = atoi(p);
+        float price = atof(p);
 
         char *name = malloc(sizeof(char)*50);
         strcpy(name, n);
@@ -215,6 +227,28 @@ void printShop(struct Shop s){
     }
 }
 
+//function to fill the customser's shopping basket
+struct transactionParties fillShoppingBasket(struct transactionParties tp){
+
+    for(int i=0; i<tp.customer.index; i++){
+        for(int j=0; j<tp.shop.index; j++){
+            //compare product names from customer list and shops stock
+            if( strcmp(tp.customer.shoppingList[i].product.name, tp.shop.stock[j].product.name)==0){
+
+                struct ProductStock basketItem = {
+                    tp.shop.stock[j].product,
+                    tp.customer.shoppingList[i].quatity
+                };
+
+                tp.customer.shoppingBasket[i] = basketItem;
+
+            }
+        }
+    }
+
+    return tp;
+}
+
 //function to display the Options menu for the end user
 void displayMainMenu(){
     system("clear");
@@ -228,11 +262,19 @@ void displayMainMenu(){
 }
 
 void readFromFile(struct Shop s){
-    system("clear");
-    readCustomerFromFile("customer.csv");
+    //system("clear");
+    struct Customer c = readCustomerFromFile("customer.csv");
+
+    struct transactionParties tp={
+        s, c
+    };
+
     printf("Shop an the Customer pre-transaction: \n\n");
-    printShop(s);
+    tp = fillShoppingBasket(tp);
+    printShop(tp.shop);
+    printCustomer(tp.customer);
 }
+
 
 
 void liveMode(){
