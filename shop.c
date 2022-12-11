@@ -71,15 +71,37 @@ struct Shop createAndStockShop(){
     // assign value from the first line as a shops cash
     shop.cash = atof(line);
 
-    printf("first line: %f \n", shop.cash);
+    printf("Shops budget: %f \n", shop.cash);
 
     while((read = getline(&line, &len, fp)) !=-1){
-        printf("line: %s", strtok(line, ","));
-        printf("lines length: %zu:\n", read);
+        //printf("line: %s", line );
+        //printf("lines length: %zu:\n", read);
 
+        char *n = strtok(line, ",");
+        char *p = strtok(NULL, ",");
+        char *q = strtok(NULL, ",");
+
+        int quantity = atoi(q);
+        int price = atoi(p);
+
+        char *name = malloc(sizeof(char)*50);
+        strcpy(name, n);
+
+        struct Product product = 
+        {
+            name,
+            price
+        }; 
+        
+        struct ProductStock stockItem =
+        {
+            product,
+            quantity
+        };
+
+        shop.stock[shop.index++]=stockItem;
 
     }
-
 /*     struct stat sb;
 
 
