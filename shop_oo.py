@@ -41,7 +41,7 @@ def read_shopping_list_from_file(sl_path, myShop):
 def live_mode(myShop, Live_shop_options):
 
     # Clear the console
-    os.system('cls')
+    os.system('cls' if os.name=='nt' else 'clear')
     print("Live mode shop")
 
     customer_name = input("Please enter the Customer name: ")
@@ -81,7 +81,7 @@ def live_mode(myShop, Live_shop_options):
 
         elif user_choice == 4:
             # Clear the console
-            os.system('cls')            
+            os.system('cls' if os.name=='nt' else 'clear')           
             print(myShop)
             print(liveCustomer)
             input("Press ENTER to continue")
@@ -89,7 +89,7 @@ def live_mode(myShop, Live_shop_options):
              # Perform the sales transaction
             try:
                 # Clear the console
-                os.system('cls')
+                os.system('cls' if os.name=='nt' else 'clear')
                 # Perform the sales transaction
                 myShop.performSales(liveCustomer, "Exceptions.csv")
                 # Print the state of Customer and Shop after the transaction

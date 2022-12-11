@@ -60,33 +60,61 @@ struct Shop createAndStockShop(){
     size_t len = 0;
     ssize_t read;
 
+
     fp = fopen("stock.csv", "r");
     if(fp==NULL){
         exit(EXIT_FAILURE);
     }
 
-    struct stat sb;
+    read = getline(&line, &len, fp);
+
+    // assign value from the first line as a shops cash
+    shop.cash = atof(line);
+
+    printf("first line: %f \n", shop.cash);
+
+    while((read = getline(&line, &len, fp)) !=-1){
+        printf("line: %s", strtok(line, ","));
+        printf("lines length: %zu:\n", read);
+
+
+    }
+
+/*     struct stat sb;
+
 
     char *textRead = malloc(sb.st_size);
-    int i = 1;
+    int i = 0;
 
+
+
+    //scans over each line if the file fp
     while (fscanf(fp, "%[^\n] ", textRead) != EOF){
 
-        char *n = strtok(textRead, ",");
 
-        char *name = malloc(sizeof(char)*50);
-        strcpy(name, n);
+        if(i==0){
+ 
+        }
+        else{
 
-        float price = atof(strtok(NULL, ","));
-        int quantity = atoi(strtok(NULL, ","));
+             breaks string into a series of tokens using delimiter ','
+            char *n = strtok(textRead, ",");        
 
-        struct Product product = {name, price};
-        struct ProductStock stockItem = {product, quantity};
+            char *name = malloc(sizeof(char)*50);
+            printf("%s, %d\n", n, i);
+            strcpy(name, n);
 
-        shop.stock[shop.index++] = stockItem;
+            float price = atof(strtok(NULL, ","));
+            int quantity = atoi(strtok(NULL, ","));
+
+            struct Product product = {name, price};
+            struct ProductStock stockItem = {product, quantity};
+
+            shop.stock[shop.index++] = stockItem;
+        }
 
         i++;
-    }    
+    }  */ 
 
     fclose(fp);
 
@@ -104,6 +132,7 @@ void printShop(struct Shop s){
 
 //function to display the Options menu for the end user
 void displayMainMenu(){
+    system("clear");
     printf("MAIN MENU \n");
 
     printf("1---Read Shopping list from file \n");
@@ -132,7 +161,13 @@ int main(void)
     struct ProductStock cokeStock = {coke, 20};
     struct ProductStock breadStock = {bread, 2};
 
+
+    struct Shop myShop = createAndStockShop();
+
     int userInput = -1;
+
+    printf("Enter your choice: ");
+    scanf("%d", &userInput);    
 
     displayMainMenu();
 
@@ -148,7 +183,6 @@ int main(void)
         else if(userInput==0){
             printf("Exiting \n");
         }else{
-            printf("%d is not a valid menu option \n \n", userInput);
             displayMainMenu();
         }
     }
@@ -160,10 +194,6 @@ int main(void)
     //przemek.shoppingList[przemek.index++] = breadStock;
 
     //printCustomer(przemek);
-
-    //printShop(createAndStockShop());
-
-    //printf("Hello world %c", 10);
 
     return 0;
 }

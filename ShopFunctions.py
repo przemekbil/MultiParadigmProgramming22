@@ -8,12 +8,13 @@ import csv
 import os
 import datetime
 
+
 # Re-used from 3rd semester Algorithms module
 # Inspired by https://computinglearner.com/how-to-create-a-menu-for-a-python-console-application/
 def display_menu(options, level=0, title="MAIN MENU"):
 
     # Clear the console
-    os.system('cls')
+    os.system('cls' if os.name=='nt' else 'clear')
     # Print the title of the menu
     print(title)
     # print the Menu options on the screen

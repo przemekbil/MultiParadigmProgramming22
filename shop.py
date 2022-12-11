@@ -212,7 +212,7 @@ def finilize_transaction(customer, shop, ef_path):
 
 def live_shop_mode(shop, live_menu, ef_path):
 
-    os.system('cls')
+    os.system('cls' if os.name=='nt' else 'clear')
     print("Live mode shop")
 
     customer_name = input("Please enter the Customer name: ")
@@ -278,14 +278,14 @@ def live_shop_mode(shop, live_menu, ef_path):
             # shopStockItem = myShop.checkStockByName(prod_name)
         elif user_choice == 4:
             # Clear the console
-            os.system('cls')            
+            os.system('cls' if os.name=='nt' else 'clear')           
             print_shop(shop)
             print_customer(liveCustomer)
             input("\nPress ENTER to continue")
 
         elif  user_choice == 5:
             # Clear the console
-            os.system('cls')
+            os.system('cls' if os.name=='nt' else 'clear')
 
             # Finilize the transaction
             finilize_transaction(liveCustomer, shop, exceptions_csv_path)
@@ -334,7 +334,7 @@ if __name__ == "__main__":
         if user_choice == 1:
 
             # Clear the console
-            os.system('cls')            
+            os.system('cls' if os.name=='nt' else 'clear')           
 
             # Read the customre shopping list from the file
             customer = read_customer(customer_csv_path)
@@ -349,7 +349,7 @@ if __name__ == "__main__":
             # Pause to give user chance to read Customer and Shop states before the transaction
             input("Press ENTER to finilize the sale")
             # Clear the console
-            os.system('cls')
+            os.system('cls' if os.name=='nt' else 'clear')
 
             finilize_transaction(customer, myShop, exceptions_csv_path)
 
