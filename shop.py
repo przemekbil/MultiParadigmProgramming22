@@ -371,7 +371,7 @@ if __name__ == "__main__":
         # Any other choice: display error message
         else:
             # if number other than 0, 1, 2, display this message
-            print("\n{} is not a vlid option menu!\n".format(user_choice))    
+            print("\n{} is not a valid menu option!\n".format(user_choice))    
 
         
 

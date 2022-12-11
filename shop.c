@@ -103,10 +103,24 @@ void printShop(struct Shop s){
 }
 
 //function to display the Options menu for the end user
-void displayMenu(int level, char *title){
-    printf("%s \n", title);
+void displayMainMenu(){
+    printf("MAIN MENU \n");
+
+    printf("1---Read Shopping list from file \n");
+    printf("2---Live mode \n");
+    printf("0---Exit \n");
+    printf("\n");
+
 }
 
+void readFromFile(){
+    printf("Option 1 \n");
+}
+
+
+void liveMode(){
+    printf("Option 2 \n");
+}
 
 int main(void)
 {
@@ -118,17 +132,36 @@ int main(void)
     struct ProductStock cokeStock = {coke, 20};
     struct ProductStock breadStock = {bread, 2};
 
-    displayMenu(1, "MAIN MENU");
+    int userInput = -1;
+
+    displayMainMenu();
+
+    while(userInput!=0){
+        printf("Enter your choice: ");
+        scanf("%d", &userInput);
+
+        if(userInput==1){
+            readFromFile();
+        } else if(userInput==2){
+            liveMode();
+        }
+        else if(userInput==0){
+            printf("Exiting \n");
+        }else{
+            printf("%d is not a valid menu option \n \n", userInput);
+            displayMainMenu();
+        }
+    }
 
 
-    printProduct(coke);
+    //printProduct(coke);
 
-    przemek.shoppingList[przemek.index++] = cokeStock;
-    przemek.shoppingList[przemek.index++] = breadStock;
+    //przemek.shoppingList[przemek.index++] = cokeStock;
+    //przemek.shoppingList[przemek.index++] = breadStock;
 
-    printCustomer(przemek);
+    //printCustomer(przemek);
 
-    printShop(createAndStockShop());
+    //printShop(createAndStockShop());
 
     //printf("Hello world %c", 10);
 
