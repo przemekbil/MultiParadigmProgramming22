@@ -102,6 +102,11 @@ void printShop(struct Shop s){
     }
 }
 
+//function to display the Options menu for the end user
+void displayMenu(int level, char *title){
+    printf("%s \n", title);
+}
+
 
 int main(void)
 {
@@ -113,15 +118,19 @@ int main(void)
     struct ProductStock cokeStock = {coke, 20};
     struct ProductStock breadStock = {bread, 2};
 
+    displayMenu(1, "MAIN MENU");
 
-    //printProduct(coke);
+
+    printProduct(coke);
 
     przemek.shoppingList[przemek.index++] = cokeStock;
     przemek.shoppingList[przemek.index++] = breadStock;
 
-    //printCustomer(przemek);
+    printCustomer(przemek);
 
     printShop(createAndStockShop());
+
+    //printf("Hello world %c", 10);
 
     return 0;
 }
