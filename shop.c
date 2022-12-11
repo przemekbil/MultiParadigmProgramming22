@@ -235,16 +235,37 @@ struct transactionParties fillShoppingBasket(struct transactionParties tp){
             //compare product names from customer list and shops stock
             if( strcmp(tp.customer.shoppingList[i].product.name, tp.shop.stock[j].product.name)==0){
 
+                int transactionQty = 0;
+                if(tp.shop.stock[j].quatity >= tp.customer.shoppingList[i].quatity){
+                    transactionQty = tp.customer.shoppingList[i].quatity;
+                }else{
+                    transactionQty = tp.shop.stock[j].quatity ;
+                }
+                // Add product to the basket
                 struct ProductStock basketItem = {
                     tp.shop.stock[j].product,
-                    tp.customer.shoppingList[i].quatity
+                    transactionQty
                 };
+                //update the shops stock                    
+                tp.shop.stock[j].quatity = tp.shop.stock[j].quatity - transactionQty;
+
 
                 tp.customer.shoppingBasket[i] = basketItem;
 
             }
         }
     }
+
+    return tp;
+}
+
+
+struct transactionParties finalizeTransaction(struct transactionParties tp){
+
+    printf("Press ENTER to finalize the sale\n");
+    char ch;
+    scanf("%c", &ch);
+    scanf("%c", &ch);
 
     return tp;
 }
@@ -271,8 +292,11 @@ void readFromFile(struct Shop s){
 
     printf("Shop an the Customer pre-transaction: \n\n");
     tp = fillShoppingBasket(tp);
+    //print the shop and customer status before the transaction
     printShop(tp.shop);
     printCustomer(tp.customer);
+    //execute the transaction
+    tp = finalizeTransaction(tp);
 }
 
 
