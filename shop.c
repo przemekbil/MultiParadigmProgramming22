@@ -29,8 +29,7 @@ struct Shop
 };
 
 void printProduct(struct Product p){
-    printf("----------------\n");
-    printf("PRODUCT NAME: %s \nPRODUCT PRICE:  %.2f\n", p.name, p.price);
+    printf("NAME: %s, PRICE:  €%.2f", p.name, p.price);
 }
 
 void printCustomer(struct Customer c){
@@ -52,7 +51,68 @@ void printCustomer(struct Customer c){
     printf("Total cost of %d orders is %.2f\n", c.index, totalCost);
 }
 
-struct Shop createAndStockShop(){
+struct Customer readCustomerFromFile(char *custFile)
+{
+    //struct Customer cust;
+
+    FILE * fp;
+    char * line = NULL;
+    size_t len = 0;
+    ssize_t read;
+
+    fp = fopen(custFile, "r");
+    if(fp==NULL){
+        exit(EXIT_FAILURE);
+    }
+
+    //read firts line with customres name an budget
+    read = getline(&line, &len, fp);
+
+    char *n = strtok(line, ",");
+    char *b = strtok(NULL, ",");
+
+    char *custName = malloc(sizeof(char)*50);
+    strcpy(custName, n);
+
+    float custBudget = atof(b);
+
+    struct Customer cust = {
+        custName,
+        custBudget
+    };
+
+
+    // read the shopping list
+    while((read = getline(&line, &len, fp)) !=-1){
+
+        char *n = strtok(line, ",");
+        char *q = strtok(NULL, ",");
+
+        int quantity = atoi(q);
+
+        char *name = malloc(sizeof(char)*50);
+        strcpy(name, n);
+
+        struct Product product = 
+        {
+            name,
+            0
+        };         
+
+        struct ProductStock stockItem =
+        {
+            product,
+            quantity
+        };
+
+        cust.shoppingList[cust.index++]=stockItem;        
+    }
+
+    return cust;
+};
+
+
+struct Shop createAndStockShop(char *stockFile){
     struct Shop shop = {200};
 
     FILE * fp;
@@ -61,11 +121,12 @@ struct Shop createAndStockShop(){
     ssize_t read;
 
 
-    fp = fopen("stock.csv", "r");
+    fp = fopen(stockFile, "r");
     if(fp==NULL){
         exit(EXIT_FAILURE);
     }
 
+    //read the first line with shops cash
     read = getline(&line, &len, fp);
 
     // assign value from the first line as a shops cash
@@ -73,6 +134,8 @@ struct Shop createAndStockShop(){
 
     printf("Shops budget: %f \n", shop.cash);
 
+    // add the products to the stock. 
+    // Read them from line 2 onwards
     while((read = getline(&line, &len, fp)) !=-1){
         //printf("line: %s", line );
         //printf("lines length: %zu:\n", read);
@@ -82,7 +145,7 @@ struct Shop createAndStockShop(){
         char *q = strtok(NULL, ",");
 
         int quantity = atoi(q);
-        int price = atoi(p);
+        float price = atoi(p);
 
         char *name = malloc(sizeof(char)*50);
         strcpy(name, n);
@@ -144,11 +207,11 @@ struct Shop createAndStockShop(){
 }
 
 void printShop(struct Shop s){
-    printf("shop has %.2f in cash\n", s.cash);
+    printf("shop has €%.2f in cash\nStock:\n", s.cash);    
 
     for(int i=0; i<s.index; i++){
         printProduct(s.stock[i].product);
-        printf("THE SHOP HAS %d OF THE ABOVE\n", s.stock[i].quatity);
+        printf(", STOCK QUANTITY: %d \n", s.stock[i].quatity);
     }
 }
 
@@ -164,8 +227,11 @@ void displayMainMenu(){
 
 }
 
-void readFromFile(){
-    printf("Option 1 \n");
+void readFromFile(struct Shop s){
+    system("clear");
+    readCustomerFromFile("customer.csv");
+    printf("Shop an the Customer pre-transaction: \n\n");
+    printShop(s);
 }
 
 
@@ -184,12 +250,10 @@ int main(void)
     struct ProductStock breadStock = {bread, 2};
 
 
-    struct Shop myShop = createAndStockShop();
+    struct Shop myShop = createAndStockShop("stock.csv");
 
-    int userInput = -1;
-
-    printf("Enter your choice: ");
-    scanf("%d", &userInput);    
+    // initialize variable
+    int userInput = -1;  
 
     displayMainMenu();
 
@@ -198,7 +262,7 @@ int main(void)
         scanf("%d", &userInput);
 
         if(userInput==1){
-            readFromFile();
+            readFromFile(myShop);
         } else if(userInput==2){
             liveMode();
         }
