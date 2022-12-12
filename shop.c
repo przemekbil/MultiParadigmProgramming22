@@ -233,9 +233,13 @@ struct transactionParties fillShoppingBasket(struct transactionParties tp){
     for(int i=0; i<tp.customer.index; i++){
         for(int j=0; j<tp.shop.index; j++){
             //compare product names from customer list and shops stock
-            if( strcmp(tp.customer.shoppingList[i].product.name, tp.shop.stock[j].product.name)==0){
+
+            int compareNames = strcmp(tp.customer.shoppingList[i].product.name, tp.shop.stock[j].product.name);
+
+            if( compareNames == 0){
 
                 int transactionQty = 0;
+                //check shops stock
                 if(tp.shop.stock[j].quatity >= tp.customer.shoppingList[i].quatity){
                     transactionQty = tp.customer.shoppingList[i].quatity;
                 }else{
@@ -252,6 +256,17 @@ struct transactionParties fillShoppingBasket(struct transactionParties tp){
 
                 tp.customer.shoppingBasket[i] = basketItem;
 
+                // Exit internal for loop if product was found and added to basket
+                break;
+
+            }else if(j==tp.shop.index-1){ //if product from shopping list is not found, add 0 stock of it to the basket
+                // Add product to the basket
+                struct ProductStock basketItem = {
+                    tp.customer.shoppingList[i].product,
+                    0
+                };
+
+                tp.customer.shoppingBasket[i] = basketItem;                
             }
         }
     }
