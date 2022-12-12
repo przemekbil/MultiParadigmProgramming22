@@ -123,7 +123,7 @@ struct Customer readCustomerFromFile(char *custFile)
     return cust;
 };
 
-
+// Function to create Shop with a stock from a file
 struct Shop createAndStockShop(char *stockFile){
     struct Shop shop = {200};
 
