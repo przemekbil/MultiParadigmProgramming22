@@ -277,10 +277,58 @@ struct transactionParties fillShoppingBasket(struct transactionParties tp){
 
 struct transactionParties finalizeTransaction(struct transactionParties tp){
 
+    
     printf("Press ENTER to finalize the sale\n");
     char ch;
+    // Read the input to give user a chance to read the Customer and shop status
     scanf("%c", &ch);
     scanf("%c", &ch);
+
+    //loop over the items in the basket to try to pay for them individually
+
+    for(int i=0; i<tp.customer.index; i++){
+
+        while (tp.customer.shoppingBasket[i].quatity > 0)
+        {
+            float payment_due = tp.customer.shoppingBasket[i].quatity * tp.customer.shoppingBasket[i].product.price;
+
+            // Check if the customer has enough cash to pay for all the items
+            if(tp.customer.budget > payment_due){
+
+                //pay for the items
+                tp.customer.budget = tp.customer.budget  - payment_due;
+                tp.shop.cash = tp.shop.cash + payment_due;
+
+                struct ProductStock bagItem = {
+                    tp.customer.shoppingBasket[i].product,
+                    tp.customer.shoppingBasket[i].quatity 
+                };
+
+                tp.customer.shoppingBag[i] = bagItem;
+
+                /*struct ProductStock basketItem = {
+                    tp.customer.shoppingBasket[i].product,
+                    0
+                };*/
+
+                tp.customer.shoppingBasket[i].quatity = 0;
+            }else{
+                //if customer can't afford to pay for all the items, remove one item from the basket
+
+                for(int j=0; j<tp.shop.index; j++){
+
+                    //compare product names from customer list and shops stock
+                    if(strcmp(tp.customer.shoppingList[i].product.name, tp.shop.stock[j].product.name) ==0 ){
+                        tp.customer.shoppingBasket[i].quatity -=1; 
+                        // and put it back on the shelf                        
+                        tp.shop.stock[j].quatity +=1;
+                        break;
+                    }
+                }
+            }
+        
+    }
+    }  
 
     return tp;
 }
@@ -305,13 +353,23 @@ void readFromFile(struct Shop s){
         s, c
     };
 
-    printf("Shop an the Customer pre-transaction: \n\n");
     tp = fillShoppingBasket(tp);
+
+    printf("Shop an the Customer pre-transaction: \n\n");
     //print the shop and customer status before the transaction
     printShop(tp.shop);
     printCustomer(tp.customer);
     //execute the transaction
     tp = finalizeTransaction(tp);
+    printf("Shop an the Customer post-transaction: \n\n");
+    //print the shop and customer status before the transaction
+    printShop(tp.shop);
+    printCustomer(tp.customer);
+
+    printf("Press ENTER to continue\n");
+    // Read the input to give user a chance to read the Customer and shop status
+    char ch;
+    scanf("%c", &ch);      
 }
 
 
