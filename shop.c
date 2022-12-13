@@ -177,42 +177,7 @@ struct Shop createAndStockShop(char *stockFile){
         shop.stock[shop.index++]=stockItem;
 
     }
-/*     struct stat sb;
-
-
-    char *textRead = malloc(sb.st_size);
-    int i = 0;
-
-
-
-    //scans over each line if the file fp
-    while (fscanf(fp, "%[^\n] ", textRead) != EOF){
-
-
-        if(i==0){
- 
-        }
-        else{
-
-             breaks string into a series of tokens using delimiter ','
-            char *n = strtok(textRead, ",");        
-
-            char *name = malloc(sizeof(char)*50);
-            printf("%s, %d\n", n, i);
-            strcpy(name, n);
-
-            float price = atof(strtok(NULL, ","));
-            int quantity = atoi(strtok(NULL, ","));
-
-            struct Product product = {name, price};
-            struct ProductStock stockItem = {product, quantity};
-
-            shop.stock[shop.index++] = stockItem;
-        }
-
-        i++;
-    }  */ 
-
+  
     fclose(fp);
 
     return shop;
@@ -345,6 +310,19 @@ void displayMainMenu(){
 
 }
 
+//function to display the Options menu for the end user
+void displayliveMenu(){
+    system("clear");
+    printf("LIVE SHOP MENU \n");
+
+    printf("   3---Ask for product \n");
+    printf("   4---Check the shopping cart \n");
+    printf("   5---Pay fo items \n");
+    printf("   0---Exit \n");
+    printf("\n");
+
+}
+
 void readFromFile(struct Shop s){
     //system("clear");
     struct Customer c = readCustomerFromFile("customer.csv");
@@ -374,8 +352,22 @@ void readFromFile(struct Shop s){
 
 
 
-void liveMode(){
-    printf("Option 2 \n");
+void liveMode(struct Shop s){
+    
+    char *custName = malloc(sizeof(char)*50);
+    float custBudget;
+    int userInput = -1; 
+
+    printf("Please enter the Customer name: ");
+    scanf("%s", custName);
+
+    printf("Please enter the Customer budget: ");
+    scanf("%f", &custBudget);
+
+    displayliveMenu();
+    printf("Enter your choice: ");
+    scanf("%d", &userInput);
+
 }
 
 int main(void)
@@ -394,16 +386,17 @@ int main(void)
     // initialize variable
     int userInput = -1;  
 
-    displayMainMenu();
+    
 
     while(userInput!=0){
+        displayMainMenu();
         printf("Enter your choice: ");
         scanf("%d", &userInput);
 
         if(userInput==1){
             readFromFile(myShop);
         } else if(userInput==2){
-            liveMode();
+            liveMode(myShop);
         }
         else if(userInput==0){
             printf("Exiting \n");
