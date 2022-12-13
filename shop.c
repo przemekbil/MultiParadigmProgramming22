@@ -358,6 +358,8 @@ void liveMode(struct Shop s){
     float custBudget;
     int userInput = -1; 
 
+    #define MAX_STING_SZ 50
+
     printf("Please enter the Customer name: ");
     scanf("%s", custName);
 
@@ -371,6 +373,9 @@ void liveMode(struct Shop s){
         custBudget
     };
 
+    struct transactionParties tp={
+        s, c
+    };
 
 
     while(userInput != 0){
@@ -380,20 +385,24 @@ void liveMode(struct Shop s){
         
         if(userInput == 3){
             //Ask for product
-            char *prodName = malloc(sizeof(char)*20);
+            char *prodName = malloc(MAX_STING_SZ);
             int reqQty = 0;
             int availQty = 0;
-            float price = 0.0;
+            struct Product prod;
+
+            if(prodName == NULL){
+                printf("No memory");
+            }
 
             printf("Please enter the product name: ");
-            scanf("%s", prodName);
+            fgets(prodName, MAX_STING_SZ, stdin);
 
             //find product in the shop
-            for(int j=0; j<s.index; j++){
+            for(int j=0; j<tp.shop.index; j++){
                 //compare product names from customer list and shops stock
-                if(strcmp(prodName, s.stock[j].product.name) ==0 ){
-                    availQty  = s.stock[j].quatity;
-                    price = s.stock[j].product.price;
+                if(strcmp(prodName, tp.shop.stock[j].product.name) ==0 ){
+                    prod = tp.shop.stock[j].product;
+                    availQty  = tp.shop.stock[j].quatity;
                     break;
                 }
             }
@@ -405,12 +414,27 @@ void liveMode(struct Shop s){
                 scanf("%c", &ch);
                 scanf("%c", &ch);
             }else{
-                printf("The shop has %i units of %s in stock. The unit price is €%.2f \n", availQty, prodName, price);
-                printf("Please specify the required amount");
+                printf("The shop has %i units of %s in stock. The unit price is €%.2f \n", availQty, prodName, prod.price);
+                printf("Please specify the required amount: ");
+                scanf("%i", &reqQty);
+
+                if(reqQty > 0){
+                    struct ProductStock shoppingListItem =
+                    {
+                        prod,
+                        reqQty
+                    };
+
+                // add the item to the shopping list
+                tp.customer.shoppingList[tp.customer.index++] = shoppingListItem;
+
+                tp = fillShoppingBasket(tp);
+                    
+                }
             }
 
         } else if(userInput == 4){
-            printCustomer(c);
+            printCustomer(tp.customer);
             printf("Press ENTER to continue\n");
             // Read the input to give user a chance to read the Customer and shop status
             char ch;
