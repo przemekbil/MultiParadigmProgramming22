@@ -364,21 +364,76 @@ void liveMode(struct Shop s){
     printf("Please enter the Customer budget: ");
     scanf("%f", &custBudget);
 
-    displayliveMenu();
-    printf("Enter your choice: ");
-    scanf("%d", &userInput);
+    //create a Customer struct
+
+    struct Customer c = {
+        custName,
+        custBudget
+    };
+
+
+
+    while(userInput != 0){
+        displayliveMenu();
+        printf("Enter your choice: ");
+        scanf("%d", &userInput);
+        
+        if(userInput == 3){
+            //Ask for product
+            char *prodName = malloc(sizeof(char)*20);
+            int reqQty = 0;
+            int availQty = 0;
+            float price = 0.0;
+
+            printf("Please enter the product name: ");
+            scanf("%s", prodName);
+
+            //find product in the shop
+            for(int j=0; j<s.index; j++){
+                //compare product names from customer list and shops stock
+                if(strcmp(prodName, s.stock[j].product.name) ==0 ){
+                    availQty  = s.stock[j].quatity;
+                    price = s.stock[j].product.price;
+                    break;
+                }
+            }
+
+            if(availQty == 0){
+                printf("The Shop doesn't have %s in stock", prodName);
+                // Read the input to give user a chance to read the Customer and shop status
+                char ch;
+                scanf("%c", &ch);
+                scanf("%c", &ch);
+            }else{
+                printf("The shop has %i units of %s in stock. The unit price is €%.2f \n", availQty, prodName, price);
+                printf("Please specify the required amount");
+            }
+
+        } else if(userInput == 4){
+            printCustomer(c);
+            printf("Press ENTER to continue\n");
+            // Read the input to give user a chance to read the Customer and shop status
+            char ch;
+            scanf("%c", &ch);
+            scanf("%c", &ch); 
+        } else if(userInput == 5){
+            //Pay for the products
+        } else{
+            printf("%i is not a valid Menu option\n", userInput);
+        }
+    }
 
 }
 
 int main(void)
 {
-    struct Customer przemek={"Przemek", 100.0};
+    /*struct Customer przemek={"Przemek", 100.0};
 
     struct Product coke={"Can of Coke", 1.10};
     struct Product bread={"Bread", 0.7};
 
     struct ProductStock cokeStock = {coke, 20};
-    struct ProductStock breadStock = {bread, 2};
+    struct ProductStock breadStock = {bread, 2};*/
 
 
     struct Shop myShop = createAndStockShop("stock.csv");
@@ -404,14 +459,6 @@ int main(void)
             displayMainMenu();
         }
     }
-
-
-    //printProduct(coke);
-
-    //przemek.shoppingList[przemek.index++] = cokeStock;
-    //przemek.shoppingList[przemek.index++] = breadStock;
-
-    //printCustomer(przemek);
 
     return 0;
 }
