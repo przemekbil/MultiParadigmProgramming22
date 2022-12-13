@@ -251,7 +251,7 @@ def live_shop_mode(shop, live_menu, ef_path):
                 print("The Shop doesn't have {} in stock".format(prod_name))
             else:
                 print("The Shop has {} units of {} in stock. The unit price is €{}\n".format(available_qty, prod_name, unit_price ))
-                req_amount = get_user_selection("Please specified the required amount: ", "'\nPlease input a whole number'")
+                req_amount = get_user_selection("Please specify the required amount: ", "'\nPlease input a whole number'")
 
                 # Keep asking the user for the new amount until it's equal or smaller than the stock
                 # Selecting 0 will cancel the order
