@@ -244,10 +244,12 @@ struct transactionParties finalizeTransaction(struct transactionParties tp){
 
     
     printf("Press ENTER to finalize the sale\n");
-    char ch;
+    //char ch;
     // Read the input to give user a chance to read the Customer and shop status
-    scanf("%c", &ch);
-    scanf("%c", &ch);
+    //scanf("%c", &ch);
+    getchar();
+    //scanf("%c", &ch);
+    //getchar();
 
     //loop over the items in the basket to try to pay for them individually
 
@@ -346,25 +348,30 @@ void readFromFile(struct Shop s){
 
     printf("Press ENTER to continue\n");
     // Read the input to give user a chance to read the Customer and shop status
-    char ch;
-    scanf("%c", &ch);      
+    //char ch;
+    //scanf("%c", &ch);      
+    getchar();
 }
 
 
 
 void liveMode(struct Shop s){
-    
-    char *custName = malloc(sizeof(char)*50);
+    #define MAX_STRING_SZ 50
+
+    char *custName = malloc(MAX_STRING_SZ);
     float custBudget;
     int userInput = -1; 
 
-    #define MAX_STING_SZ 50
+    
 
     printf("Please enter the Customer name: ");
+    //fgets(custName, MAX_STRING_SZ, stdin);
     scanf("%s", custName);
+    getchar();
 
     printf("Please enter the Customer budget: ");
     scanf("%f", &custBudget);
+    getchar();
 
     //create a Customer struct
 
@@ -382,20 +389,23 @@ void liveMode(struct Shop s){
         displayliveMenu();
         printf("Enter your choice: ");
         scanf("%d", &userInput);
+        getchar();
         
         if(userInput == 3){
             //Ask for product
-            char *prodName = malloc(MAX_STING_SZ);
+            char *prodName = malloc(MAX_STRING_SZ);
             int reqQty = 0;
             int availQty = 0;
             struct Product prod;
 
-            if(prodName == NULL){
-                printf("No memory");
-            }
-
             printf("Please enter the product name: ");
-            fgets(prodName, MAX_STING_SZ, stdin);
+            // fgets used to allo for strings with spaces
+            fgets(prodName, MAX_STRING_SZ, stdin);
+
+            // remove the new line character form the end of the sting
+            if( (strlen(prodName)>0) && (prodName[strlen(prodName) -1 ]=='\n')){
+                prodName[strlen(prodName) - 1] = '\0';
+            }
 
             //find product in the shop
             for(int j=0; j<tp.shop.index; j++){
@@ -410,13 +420,12 @@ void liveMode(struct Shop s){
             if(availQty == 0){
                 printf("The Shop doesn't have %s in stock", prodName);
                 // Read the input to give user a chance to read the Customer and shop status
-                char ch;
-                scanf("%c", &ch);
-                scanf("%c", &ch);
+                getchar();
             }else{
                 printf("The shop has %i units of %s in stock. The unit price is €%.2f \n", availQty, prodName, prod.price);
                 printf("Please specify the required amount: ");
                 scanf("%i", &reqQty);
+                getchar();
 
                 if(reqQty > 0){
                     struct ProductStock shoppingListItem =
@@ -437,11 +446,18 @@ void liveMode(struct Shop s){
             printCustomer(tp.customer);
             printf("Press ENTER to continue\n");
             // Read the input to give user a chance to read the Customer and shop status
-            char ch;
-            scanf("%c", &ch);
-            scanf("%c", &ch); 
+            getchar();
         } else if(userInput == 5){
             //Pay for the products
+                //execute the transaction
+            tp = finalizeTransaction(tp);
+            printf("Shop an the Customer post-transaction: \n\n");
+            //print the shop and customer status before the transaction
+            printShop(tp.shop);
+            printCustomer(tp.customer);
+            printf("Press ENTER to continue\n");
+            // Read the input to give user a chance to read the Customer and shop status
+            getchar();            
         } else{
             printf("%i is not a valid Menu option\n", userInput);
         }
@@ -451,15 +467,6 @@ void liveMode(struct Shop s){
 
 int main(void)
 {
-    /*struct Customer przemek={"Przemek", 100.0};
-
-    struct Product coke={"Can of Coke", 1.10};
-    struct Product bread={"Bread", 0.7};
-
-    struct ProductStock cokeStock = {coke, 20};
-    struct ProductStock breadStock = {bread, 2};*/
-
-
     struct Shop myShop = createAndStockShop("stock.csv");
 
     // initialize variable
@@ -471,6 +478,7 @@ int main(void)
         displayMainMenu();
         printf("Enter your choice: ");
         scanf("%d", &userInput);
+        getchar();
 
         if(userInput==1){
             readFromFile(myShop);
