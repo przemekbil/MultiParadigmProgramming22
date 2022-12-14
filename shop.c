@@ -42,25 +42,40 @@ void printProduct(struct Product p){
 
 void printCustomer(struct Customer c){
 
-    double totalCost = 0;
+    double totalCostDue = 0;
+    double totalCostPayed = 0;
+    int itemsInBasket = 0;
+    int itemsInBag = 0;
 
     printf("\n");
     printf("%s has €%.2f in cash\n", c.name, c.budget);
 
     for(int i=0; i<c.index; i++){
+
+        //Count total items in the basket and in the bag
+        itemsInBasket += c.shoppingBasket[i].quatity;
+        itemsInBag += c.shoppingBag[i].quatity;
+
         printProduct(c.shoppingBasket[i].product);
  
         printf(", REQUIRED QUANTITY: %d", c.shoppingList[i].quatity);
         printf(", IN THE BASKET: %d", c.shoppingBasket[i].quatity);
         printf(", IN THE BAG: %d\n", c.shoppingBag[i].quatity);
-        double cost = c.shoppingBasket[i].product.price*c.shoppingBasket[i].quatity;
-        totalCost +=cost;
+
+        totalCostPayed += c.shoppingBag[i].product.price*c.shoppingBag[i].quatity;
+        totalCostDue += c.shoppingBasket[i].product.price*c.shoppingBasket[i].quatity;
         //printf("Cost of this order is %.2f\n\n", cost);
     }
 
-    double rest = c.budget - totalCost;
-    printf("------------------------------------------\n");
-    printf("The total cost would be €%.2f, customer would have €%.2f left\n\n", totalCost, rest);
+    if(itemsInBasket > 0){
+        double rest = c.budget - totalCostDue;
+        printf("------------------------------------------\n");
+        printf("The total cost would be €%.2f, customer would have €%.2f left\n\n", totalCostDue, rest);        
+    } else if(itemsInBag > 0){
+        printf("------------------------------------------\n");
+        printf("The total cost of purchased items: €%.2f. Customer has €%.2f left\n\n", totalCostPayed, c.budget);
+    }
+
 }
 
 struct Customer readCustomerFromFile(char *custFile)
@@ -200,8 +215,10 @@ struct transactionParties fillShoppingBasket(struct transactionParties tp){
             //compare product names from customer list and shops stock
 
             int compareNames = strcmp(tp.customer.shoppingList[i].product.name, tp.shop.stock[j].product.name);
-
-            if( compareNames == 0){
+            
+            //if product was found in the shops stock
+            // and was not bought already
+            if( compareNames == 0 && tp.customer.shoppingBag[i].quatity==0){
 
                 int transactionQty = 0;
                 //check shops stock
@@ -319,7 +336,7 @@ void displayliveMenu(){
 
     printf("   3---Ask for product \n");
     printf("   4---Check the shopping cart \n");
-    printf("   5---Pay fo items \n");
+    printf("   5---Pay for items \n");
     printf("   0---Exit \n");
     printf("\n");
 
@@ -443,6 +460,7 @@ void liveMode(struct Shop s){
             }
 
         } else if(userInput == 4){
+            printShop(tp.shop);
             printCustomer(tp.customer);
             printf("Press ENTER to continue\n");
             // Read the input to give user a chance to read the Customer and shop status
