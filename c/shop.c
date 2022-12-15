@@ -1,5 +1,6 @@
 #define _GNU_SOURCE
 #include <stdio.h>
+#include <time.h>
 #include <string.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -208,6 +209,10 @@ void printShop(struct Shop s){
 }
 
 void logException(const char* log_file, char* log_text){
+
+    time_t result = time(NULL);
+    printf("%s", ctime(&result));
+
     printf("Well, that's an exception: %s", log_text);
     getchar();
 }
