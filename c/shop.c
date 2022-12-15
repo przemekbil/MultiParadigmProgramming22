@@ -78,7 +78,7 @@ void printCustomer(struct Customer c){
 
 }
 
-struct Customer readCustomerFromFile(char *custFile)
+struct Customer readCustomerFromFile(const char *custFile)
 {
     //struct Customer cust;
 
@@ -139,7 +139,7 @@ struct Customer readCustomerFromFile(char *custFile)
 };
 
 // Function to create Shop with a stock from a file
-struct Shop createAndStockShop(char *stockFile){
+struct Shop createAndStockShop(const char* stockFile){
     struct Shop shop = {200};
 
     FILE * fp;
@@ -207,8 +207,13 @@ void printShop(struct Shop s){
     }
 }
 
+void logException(const char* log_file, char* log_text){
+    printf("Well, that's an exception: %s", log_text);
+    getchar();
+}
+
 //function to fill the customser's shopping basket
-struct transactionParties fillShoppingBasket(struct transactionParties tp){
+struct transactionParties fillShoppingBasket(struct transactionParties tp, const char* log_file){
 
     for(int i=0; i<tp.customer.index; i++){
         for(int j=0; j<tp.shop.index; j++){
@@ -225,6 +230,11 @@ struct transactionParties fillShoppingBasket(struct transactionParties tp){
                 if(tp.shop.stock[j].quatity >= tp.customer.shoppingList[i].quatity){
                     transactionQty = tp.customer.shoppingList[i].quatity;
                 }else{
+                    // https://stackoverflow.com/questions/4881937/building-strings-from-variables-in-c
+                    char *msgOut;
+                    asprintf(&msgOut, "There is not enough %s in stock. Actual stock: %i / Required Stock %i", 
+                    tp.customer.shoppingList[i].product.name, tp.shop.stock[j].quatity, tp.customer.shoppingList[i].quatity);
+                    logException(log_file, msgOut);
                     transactionQty = tp.shop.stock[j].quatity ;
                 }
                 // Add product to the basket
@@ -257,7 +267,7 @@ struct transactionParties fillShoppingBasket(struct transactionParties tp){
 }
 
 
-struct transactionParties finalizeTransaction(struct transactionParties tp){
+struct transactionParties finalizeTransaction(struct transactionParties tp, const char* log_file){
 
     
     printf("Press ENTER to finalize the sale\n");
@@ -298,6 +308,12 @@ struct transactionParties finalizeTransaction(struct transactionParties tp){
                 tp.customer.shoppingBasket[i].quatity = 0;
             }else{
                 //if customer can't afford to pay for all the items, remove one item from the basket
+
+                float cost = tp.customer.shoppingBasket[i].product.price * tp.customer.shoppingBasket[i].quatity;
+                char *msgOut;
+                asprintf(&msgOut, "%s has not enough money to pay for %i units of %s worth %.2f as he/she has only %.2f", 
+                tp.customer.name, tp.customer.shoppingBasket[i].quatity, tp.customer.shoppingBasket[i].product.name, cost, tp.customer.budget);
+                logException(log_file, msgOut);
 
                 for(int j=0; j<tp.shop.index; j++){
 
@@ -342,22 +358,22 @@ void displayliveMenu(){
 
 }
 
-void readFromFile(struct Shop s){
+void readFromFile(struct Shop s, const char* cust_csv_file, const char* log_file){
     //system("clear");
-    struct Customer c = readCustomerFromFile("customer.csv");
+    struct Customer c = readCustomerFromFile(cust_csv_file);
 
     struct transactionParties tp={
         s, c
     };
 
-    tp = fillShoppingBasket(tp);
+    tp = fillShoppingBasket(tp, log_file);
 
     printf("Shop an the Customer pre-transaction: \n\n");
     //print the shop and customer status before the transaction
     printShop(tp.shop);
     printCustomer(tp.customer);
     //execute the transaction
-    tp = finalizeTransaction(tp);
+    tp = finalizeTransaction(tp, log_file);
     printf("Shop an the Customer post-transaction: \n\n");
     //print the shop and customer status before the transaction
     printShop(tp.shop);
@@ -372,7 +388,7 @@ void readFromFile(struct Shop s){
 
 
 
-void liveMode(struct Shop s){
+void liveMode(struct Shop s, const char* log_file){
     #define MAX_STRING_SZ 50
 
     char *custName = malloc(MAX_STRING_SZ);
@@ -454,7 +470,7 @@ void liveMode(struct Shop s){
                 // add the item to the shopping list
                 tp.customer.shoppingList[tp.customer.index++] = shoppingListItem;
 
-                tp = fillShoppingBasket(tp);
+                tp = fillShoppingBasket(tp, log_file);
                     
                 }
             }
@@ -468,7 +484,7 @@ void liveMode(struct Shop s){
         } else if(userInput == 5){
             //Pay for the products
                 //execute the transaction
-            tp = finalizeTransaction(tp);
+            tp = finalizeTransaction(tp, log_file);
             printf("Shop an the Customer post-transaction: \n\n");
             //print the shop and customer status before the transaction
             printShop(tp.shop);
@@ -485,13 +501,19 @@ void liveMode(struct Shop s){
 
 int main(void)
 {
-    struct Shop myShop = createAndStockShop("stock.csv");
+    // these won't be changed during run of the program, defining them as constants:
+    const char* shop_csv_file = "../stock.csv";
+    const char* cust_csv_file = "../customer.csv";
+    const char* log_file = "../Exceptions.csv";
+
+    // initializing the shop
+    // Shop is initialized only once at the begining of the program
+    struct Shop myShop = createAndStockShop(shop_csv_file);
 
     // initialize variable
     int userInput = -1;  
-
     
-
+    // run this loop until user presses 0
     while(userInput!=0){
         displayMainMenu();
         printf("Enter your choice: ");
@@ -499,9 +521,9 @@ int main(void)
         getchar();
 
         if(userInput==1){
-            readFromFile(myShop);
+            readFromFile(myShop, cust_csv_file, log_file);
         } else if(userInput==2){
-            liveMode(myShop);
+            liveMode(myShop, log_file);
         }
         else if(userInput==0){
             printf("Exiting \n");
