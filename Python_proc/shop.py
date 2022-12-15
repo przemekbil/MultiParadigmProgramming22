@@ -7,7 +7,7 @@
 import csv
 import os
 from ShopFunctions import display_menu, get_user_selection, get_user_number, defineMenuChoices, addToExceptionsFiles
-from ShopErrors import BudgetTooLowError, NotEnoughStockError
+
 
 def create_and_stock_shop(path):
 
@@ -309,11 +309,11 @@ def live_shop_mode(shop, live_menu, ef_path):
 if __name__ == "__main__":
 
     # File path for the shop's csv file
-    shop_csv_path = 'stock.csv'
+    shop_csv_path = '../stock.csv'
     # File path for customer's csv file
-    customer_csv_path = 'customer.csv'
+    customer_csv_path = '../customer.csv'
     # File path for the Exceptions csv file
-    exceptions_csv_path ='Exceptions.csv'
+    exceptions_csv_path ='../Exceptions.csv'
 
     # Initialize myShop variable by reading shop status from the csv file
     myShop = create_and_stock_shop(shop_csv_path)

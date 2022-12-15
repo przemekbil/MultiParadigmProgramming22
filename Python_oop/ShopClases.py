@@ -5,8 +5,8 @@
 # Collections of Classes used in shop simulation written using Object Oriented Python
 
 import csv
-from ShopErrors import NotEnoughStockError, BudgetTooLowError
-from ShopFunctions import addToExceptionsFiles
+from ShopErrors import BudgetTooLowError
+import ShopFunctions
 
 # defining the Product class
 # This class will describe a product in the shop
@@ -180,7 +180,7 @@ class Customer:
                             qty, 
                             list_item.quantity
                             )
-                        addToExceptionsFiles(ef_path, err_msg)
+                        ShopFunctions.addToExceptionsFiles(ef_path, err_msg)
 
                     # keep a tally of sum of all the products in the basket
                     self.basket_qty += qty
@@ -345,7 +345,7 @@ class Shop:
                                     basket_item.getCost(),
                                     customer.budget  
                                 )
-                    addToExceptionsFiles(ef_path, err_msg)                      
+                    ShopFunctions.addToExceptionsFiles(ef_path, err_msg)                      
 
                     # remove one item from the basket
                     basket_item.changeBasketQty(-1)

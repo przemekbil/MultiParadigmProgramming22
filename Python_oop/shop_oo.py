@@ -10,7 +10,9 @@ from ShopClases import Customer, Shop
 import os
 from ShopErrors import BudgetTooLowError
 from ShopFunctions import display_menu, get_user_selection, get_user_number, defineMenuChoices
+#import sys
 
+#sys.path.insert(0, '/home/admin/Documents/GMIT/MultiParadigmProgramming22/Python_proc')
     
 
 # Function used to read the Customer's shopping list from the csv file
@@ -109,9 +111,15 @@ def live_mode(myShop, Live_shop_options):
 
 # main for function call
 if __name__ == "__main__":
+    # File path for the shop's csv file
+    shop_csv_path = '../stock.csv'
+    # File path for customer's csv file
+    customer_csv_path = '../customer.csv'
+    # File path for the Exceptions csv file
+    exceptions_csv_path ='../Exceptions.csv'    
 
     # Create an instance of the Shop class
-    myShop = Shop("stock.csv", "Exceptions.csv")
+    myShop = Shop(shop_csv_path, exceptions_csv_path)
 
     # define the options for the menu to be displayed for the user
     main_menu_options, Live_shop_options = defineMenuChoices()
@@ -128,10 +136,10 @@ if __name__ == "__main__":
         if user_choice == 1:
 
             # Create an instance of the Customer class by reading the shopping list from the file
-            customer = Customer("customer.csv")
+            customer = Customer(customer_csv_path)
 
             # Fill out the customer's basket 
-            customer.fill_shopping_basket(myShop, "Exceptions.csv")            
+            customer.fill_shopping_basket(myShop, exceptions_csv_path)            
 
             # Print customer and shop states before the transaction
             print("\nShop and the Customer pre-transaction: \n")
@@ -142,7 +150,7 @@ if __name__ == "__main__":
             input("Press ENTER to finilize the sale")
 
             # Perform the sales transaction
-            myShop.performSales(customer, "Exceptions.csv")
+            myShop.performSales(customer, exceptions_csv_path)
 
             # Print the states of both objects after the transaction
             print("Shop and the Customer post-transaction: \n")
