@@ -209,6 +209,8 @@ void printShop(struct Shop s){
 }
 
 void logException(const char* log_file, char* log_text){
+    
+    FILE * fs;
 
     time_t result = time(NULL);
     //printf("%s", ctime(&result));
@@ -218,8 +220,15 @@ void logException(const char* log_file, char* log_text){
     char *t = ctime(&result);
     if (t[strlen(t)-1] == '\n') t[strlen(t)-1] = '\0';
 
+    fs = fopen(log_file, "a");
+    if(fs == NULL){
+        printf("Couldn't open file\n");
+    return;
+    }
     printf("%s, %s", t, log_text);
-    getchar();
+    fclose(fs);
+
+   //getchar();
 }
 
 //function to fill the customser's shopping basket

@@ -40,7 +40,7 @@ def read_shopping_list_from_file(sl_path, myShop):
     return customer1
 
 
-def live_mode(myShop, Live_shop_options):
+def live_mode(myShop, Live_shop_options, exceptions_csv_path):
 
     # Clear the console
     os.system('cls' if os.name=='nt' else 'clear')
@@ -77,7 +77,7 @@ def live_mode(myShop, Live_shop_options):
                 liveCustomer.addItemToShoppingList(prod_name, shopStockItem.getUnitPrice(), req_amount)
 
                 # Put available products into the shopping basket
-                liveCustomer.fill_shopping_basket(myShop, "Exceptions.csv")
+                liveCustomer.fill_shopping_basket(myShop, exceptions_csv_path)
 
                 
 
@@ -93,7 +93,7 @@ def live_mode(myShop, Live_shop_options):
                 # Clear the console
                 os.system('cls' if os.name=='nt' else 'clear')
                 # Perform the sales transaction
-                myShop.performSales(liveCustomer, "Exceptions.csv")
+                myShop.performSales(liveCustomer, exceptions_csv_path)
                 # Print the state of Customer and Shop after the transaction
                 print(myShop)
                 print(liveCustomer)
@@ -160,7 +160,7 @@ if __name__ == "__main__":
             input("Press enter to continue...")
 
         elif user_choice == 2:
-            live_mode(myShop, Live_shop_options)
+            live_mode(myShop, Live_shop_options, exceptions_csv_path)
             #input("Press enter to continue...")          
 
         elif user_choice==0:
