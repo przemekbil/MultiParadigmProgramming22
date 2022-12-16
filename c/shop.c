@@ -208,27 +208,28 @@ void printShop(struct Shop s){
     }
 }
 
+// function to log the exceptions to the file
 void logException(const char* log_file, char* log_text){
     
-    FILE * fs;
-
+    // file pointer
+    FILE * fp;
+    // current time
     time_t result = time(NULL);
-    //printf("%s", ctime(&result));
-    //printf("UTC:       %s", asctime(gmtime(&result)));
 
     //https://stackoverflow.com/questions/41705537/how-to-remove-line-breaks-after-ctime-in-c-program
     char *t = ctime(&result);
     if (t[strlen(t)-1] == '\n') t[strlen(t)-1] = '\0';
 
-    fs = fopen(log_file, "a");
-    if(fs == NULL){
+    // open the log file
+    fp = fopen(log_file, "a");
+    if(fp == NULL){
         printf("Couldn't open file\n");
     return;
     }
-    printf("%s, %s", t, log_text);
-    fclose(fs);
-
-   //getchar();
+    //write the exception log with the current time stamp
+    fprintf(fp, "%s, %s\n", t, log_text);
+    // close the file
+    fclose(fp);
 }
 
 //function to fill the customser's shopping basket
