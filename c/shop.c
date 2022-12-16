@@ -211,9 +211,14 @@ void printShop(struct Shop s){
 void logException(const char* log_file, char* log_text){
 
     time_t result = time(NULL);
-    printf("%s", ctime(&result));
+    //printf("%s", ctime(&result));
+    //printf("UTC:       %s", asctime(gmtime(&result)));
 
-    printf("Well, that's an exception: %s", log_text);
+    //https://stackoverflow.com/questions/41705537/how-to-remove-line-breaks-after-ctime-in-c-program
+    char *t = ctime(&result);
+    if (t[strlen(t)-1] == '\n') t[strlen(t)-1] = '\0';
+
+    printf("%s, %s", t, log_text);
     getchar();
 }
 
