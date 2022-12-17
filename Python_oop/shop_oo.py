@@ -9,7 +9,7 @@
 from ShopClases import Customer, Shop
 import os
 from ShopErrors import BudgetTooLowError
-from ShopFunctions import display_menu, get_user_selection, get_user_number, defineMenuChoices
+from ShopFunctions import display_menu, get_user_selection, get_user_number, defineMenuChoices, addToExceptionsFiles
 #import sys
 
 #sys.path.insert(0, '/home/admin/Documents/GMIT/MultiParadigmProgramming22/Python_proc')
@@ -68,7 +68,10 @@ def live_mode(myShop, Live_shop_options, exceptions_csv_path):
 
             # Check if product is found in Shops stock
             if shopStockItem.getQty() == 0:
-                print("The Shop doesn't have {} in stock".format(prod_name))
+                msgOut = "Shop doesn't have {} in stock".format(prod_name)
+                print(msgOut)                
+                addToExceptionsFiles(exceptions_csv_path, msgOut)
+                input("Press ENTER to continue")
             else:
                 print("The Shop has {} units of {} in stock. The unit price is €{} ".format(shopStockItem.getQty(), prod_name, shopStockItem.getUnitPrice()))
                 req_amount = get_user_selection("Please specified the required amount: ", "'\nPlease input a whole number'")

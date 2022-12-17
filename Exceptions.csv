@@ -188,3 +188,12 @@ Sat Dec 17 10:31:22 2022, John has not enough money to pay for 1 units of Bread 
 2022-12-17 10:35:49.779215, John has not enough money to pay for 3 units of Bread worth 2.10 as he/she has only 0.20
 2022-12-17 10:35:49.779383, John has not enough money to pay for 2 units of Bread worth 1.40 as he/she has only 0.20
 2022-12-17 10:35:49.779530, John has not enough money to pay for 1 units of Bread worth 0.70 as he/she has only 0.20
+Sat Dec 17 10:52:22 2022, The Shop doesn't have Breads in stock
+Sat Dec 17 10:54:00 2022, The Shop doesn't have bread in stock
+Sat Dec 17 10:54:31 2022, The Shop doesn't have Breads in stock
+Sat Dec 17 10:54:44 2022, The Shop doesn't have Beer in stock
+Sat Dec 17 10:55:26 2022, The Shop doesn't have Water in stock
+2022-12-17 11:13:51.273832, Shop doesn't have Juice in stock
+2022-12-17 11:15:08.318248, Shop doesn't have juice in stock
+2022-12-17 11:15:31.465717, There is not enough Bread in stock. Actual stock: 30 / Required Stock 50 
+2022-12-17 11:17:52.452620, Shop doesn't have Soda in stock

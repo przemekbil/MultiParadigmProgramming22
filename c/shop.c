@@ -31,6 +31,8 @@ struct Shop
     int index;
 };
 
+// Data structure to hold both Shop and a Customer
+// This is usefull, when a function changes the state of both and both need to be returned by that function
 struct transactionParties
 {
     struct Shop shop;
@@ -429,12 +431,12 @@ void liveMode(struct Shop s, const char* log_file){
     getchar();
 
     //create a Customer struct
-
     struct Customer c = {
         custName,
         custBudget
     };
 
+    // data structure to store both Shop and a Customer
     struct transactionParties tp={
         s, c
     };
@@ -473,8 +475,12 @@ void liveMode(struct Shop s, const char* log_file){
             }
 
             if(availQty == 0){
-                printf("The Shop doesn't have %s in stock", prodName);
+                char *msgOut;
+                asprintf(&msgOut, "Shop doesn't have %s in stock", prodName);
+                printf("%s\n", msgOut);
+                logException(log_file, msgOut);
                 // Read the input to give user a chance to read the Customer and shop status
+                printf("Press ENTER to continue");
                 getchar();
             }else{
                 printf("The shop has %i units of %s in stock. The unit price is €%.2f \n", availQty, prodName, prod.price);

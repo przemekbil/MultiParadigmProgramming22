@@ -248,7 +248,10 @@ def live_shop_mode(shop, live_menu, ef_path):
 
             
             if available_qty== 0:
-                print("The Shop doesn't have {} in stock".format(prod_name))
+                msgOut = "Shop doesn't have {} in stock".format(prod_name)
+                print(msgOut)                
+                addToExceptionsFiles(exceptions_csv_path, msgOut)
+                input("Press ENTER to continue")
             else:
                 print("The Shop has {} units of {} in stock. The unit price is €{}\n".format(available_qty, prod_name, unit_price ))
                 req_amount = get_user_selection("Please specify the required amount: ", "'\nPlease input a whole number'")
