@@ -141,13 +141,15 @@ if __name__ == "__main__":
             # Fill out the customer's basket 
             customer.fill_shopping_basket(myShop, exceptions_csv_path)            
 
+            os.system('cls' if os.name=='nt' else 'clear')
             # Print customer and shop states before the transaction
-            print("\nShop and the Customer pre-transaction: \n")
+            print("Shop and the Customer pre-transaction: \n")
             print(myShop)
             print(customer)
 
             # Pause to give user chance to read Customer and Shop states before the transaction
             input("Press ENTER to finilize the sale")
+            os.system('cls' if os.name=='nt' else 'clear')
 
             # Perform the sales transaction
             myShop.performSales(customer, exceptions_csv_path)

@@ -342,6 +342,7 @@ if __name__ == "__main__":
             # fill customers basket based on the shopping list and available stock in shop
             customer, myShop = fill_shopping_basket(customer, myShop, exceptions_csv_path)
 
+            os.system('cls' if os.name=='nt' else 'clear') 
             print("\nShop and the Customer pre-transaction:\n")
             print_shop(myShop)
             print_customer(customer)            

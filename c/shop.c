@@ -211,7 +211,7 @@ void printShop(struct Shop s){
 // function to log the exceptions to the file
 void logException(const char* log_file, char* log_text){
     
-    // file pointer
+    // pointer to thr log file
     FILE * fp;
     // current time
     time_t result = time(NULL);
@@ -290,7 +290,7 @@ struct transactionParties fillShoppingBasket(struct transactionParties tp, const
 struct transactionParties finalizeTransaction(struct transactionParties tp, const char* log_file){
 
     
-    printf("Press ENTER to finalize the sale\n");
+    printf("Press ENTER to finalize the sale");
     //char ch;
     // Read the input to give user a chance to read the Customer and shop status
     //scanf("%c", &ch);
@@ -379,7 +379,7 @@ void displayliveMenu(){
 }
 
 void readFromFile(struct Shop s, const char* cust_csv_file, const char* log_file){
-    //system("clear");
+    system("clear");
     struct Customer c = readCustomerFromFile(cust_csv_file);
 
     struct transactionParties tp={
@@ -393,17 +393,19 @@ void readFromFile(struct Shop s, const char* cust_csv_file, const char* log_file
     printShop(tp.shop);
     printCustomer(tp.customer);
     //execute the transaction
-    tp = finalizeTransaction(tp, log_file);
+    tp = finalizeTransaction(tp, log_file);    
+    system("clear");
     printf("Shop an the Customer post-transaction: \n\n");
     //print the shop and customer status before the transaction
     printShop(tp.shop);
     printCustomer(tp.customer);
 
-    printf("Press ENTER to continue\n");
+    printf("Press ENTER to continue");
     // Read the input to give user a chance to read the Customer and shop status
     //char ch;
     //scanf("%c", &ch);      
     getchar();
+    
 }
 
 
