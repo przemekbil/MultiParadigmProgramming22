@@ -5,14 +5,13 @@
 # Shop simulation written using Object Oriented Python
 
 
+
 # Import custom Shop and Customer classes
 from ShopClases import Customer, Shop
 import os
 from ShopErrors import BudgetTooLowError
 from ShopFunctions import display_menu, get_user_selection, get_user_number, defineMenuChoices, addToExceptionsFiles
 #import sys
-
-#sys.path.insert(0, '/home/admin/Documents/GMIT/MultiParadigmProgramming22/Python_proc')
     
 
 # Function used to read the Customer's shopping list from the csv file

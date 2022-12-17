@@ -150,9 +150,6 @@ class Customer:
                     # Use the the instance of Product class and required quantity to initialize and instance of ShoppingListItem class                
                     self.shopping_list.append(ShoppingListItem(p, quantity))
 
-    #def itemsNotInBasketOrBag(sl):
-
-
 
     # function to look for items from the customre shopping list in the shops stock,
     # putting found items to the shopping basket and calculating the total cost

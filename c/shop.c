@@ -1,3 +1,9 @@
+// Przemyslaw Bil
+// g00398317@atu.ie
+// Multi Paradigm Programming 2022
+
+// Shop simulation written using C
+
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <time.h>
