@@ -197,3 +197,69 @@ Sat Dec 17 10:55:26 2022, The Shop doesn't have Water in stock
 2022-12-17 11:15:08.318248, Shop doesn't have juice in stock
 2022-12-17 11:15:31.465717, There is not enough Bread in stock. Actual stock: 30 / Required Stock 50 
 2022-12-17 11:17:52.452620, Shop doesn't have Soda in stock
+2022-12-17 12:58:10.942766, Alice has not enough money to pay for 2 units of Bread worth 1.40 as he/she has only 1.00
+2022-12-17 13:40:24.125599, There is not enough Bin Bags in stock. Actual stock: 4 / Required Stock 10 
+2022-12-17 13:40:35.577120, John has not enough money to pay for 5 units of Bread worth 3.50 as he/she has only 0.20
+2022-12-17 13:40:35.577466, John has not enough money to pay for 4 units of Bread worth 2.80 as he/she has only 0.20
+2022-12-17 13:40:35.577648, John has not enough money to pay for 3 units of Bread worth 2.10 as he/she has only 0.20
+2022-12-17 13:40:35.577806, John has not enough money to pay for 2 units of Bread worth 1.40 as he/she has only 0.20
+2022-12-17 13:40:35.577959, John has not enough money to pay for 1 units of Bread worth 0.70 as he/she has only 0.20
+Sat Dec 17 13:41:45 2022, There is not enough Bin Bags in stock. Actual stock: 4 / Required Stock 10
+Sat Dec 17 13:42:00 2022, John has not enough money to pay for 5 units of Bread worth 3.50 as he/she has only 0.20
+Sat Dec 17 13:42:00 2022, John has not enough money to pay for 4 units of Bread worth 2.80 as he/she has only 0.20
+Sat Dec 17 13:42:00 2022, John has not enough money to pay for 3 units of Bread worth 2.10 as he/she has only 0.20
+Sat Dec 17 13:42:00 2022, John has not enough money to pay for 2 units of Bread worth 1.40 as he/she has only 0.20
+Sat Dec 17 13:42:00 2022, John has not enough money to pay for 1 units of Bread worth 0.70 as he/she has only 0.20
+Sat Dec 17 13:44:45 2022, There is not enough Bin Bags in stock. Actual stock: 4 / Required Stock 10
+Sat Dec 17 13:44:57 2022, John has not enough money to pay for 5 units of Bread worth 3.50 as he/she has only 0.20
+Sat Dec 17 13:44:57 2022, John has not enough money to pay for 4 units of Bread worth 2.80 as he/she has only 0.20
+Sat Dec 17 13:44:57 2022, John has not enough money to pay for 3 units of Bread worth 2.10 as he/she has only 0.20
+Sat Dec 17 13:44:57 2022, John has not enough money to pay for 2 units of Bread worth 1.40 as he/she has only 0.20
+Sat Dec 17 13:44:57 2022, John has not enough money to pay for 1 units of Bread worth 0.70 as he/she has only 0.20
+Sat Dec 17 13:45:55 2022, There is not enough Bin Bags in stock. Actual stock: 4 / Required Stock 10
+Sat Dec 17 13:46:10 2022, John has not enough money to pay for 5 units of Bread worth 3.50 as he/she has only 0.20
+Sat Dec 17 13:46:10 2022, John has not enough money to pay for 4 units of Bread worth 2.80 as he/she has only 0.20
+Sat Dec 17 13:46:10 2022, John has not enough money to pay for 3 units of Bread worth 2.10 as he/she has only 0.20
+Sat Dec 17 13:46:10 2022, John has not enough money to pay for 2 units of Bread worth 1.40 as he/she has only 0.20
+Sat Dec 17 13:46:10 2022, John has not enough money to pay for 1 units of Bread worth 0.70 as he/she has only 0.20
+2022-12-17 13:46:44.379290, There is not enough Bin Bags in stock. Actual stock: 4 / Required Stock 10 
+2022-12-17 13:51:15.916640, John has not enough money to pay for 5 units of Bread worth 3.50 as he/she has only 0.20
+2022-12-17 13:51:15.916875, John has not enough money to pay for 4 units of Bread worth 2.80 as he/she has only 0.20
+2022-12-17 13:51:15.917010, John has not enough money to pay for 3 units of Bread worth 2.10 as he/she has only 0.20
+2022-12-17 13:51:15.917140, John has not enough money to pay for 2 units of Bread worth 1.40 as he/she has only 0.20
+2022-12-17 13:51:15.917291, John has not enough money to pay for 1 units of Bread worth 0.70 as he/she has only 0.20
+2022-12-17 13:51:26.415690, There is not enough Bin Bags in stock. Actual stock: 4 / Required Stock 10 
+2022-12-17 13:52:10.315125, John has not enough money to pay for 5 units of Bread worth 3.50 as he/she has only 0.20
+2022-12-17 13:52:10.315398, John has not enough money to pay for 4 units of Bread worth 2.80 as he/she has only 0.20
+2022-12-17 13:52:10.315534, John has not enough money to pay for 3 units of Bread worth 2.10 as he/she has only 0.20
+2022-12-17 13:52:10.315662, John has not enough money to pay for 2 units of Bread worth 1.40 as he/she has only 0.20
+2022-12-17 13:52:10.315791, John has not enough money to pay for 1 units of Bread worth 0.70 as he/she has only 0.20
+Sat Dec 17 13:58:23 2022, There is not enough Bin Bags in stock. Actual stock: 4 / Required Stock 10
+Sat Dec 17 13:58:23 2022, Shop doesn't have Beer in stock
+Sat Dec 17 13:58:25 2022, John has not enough money to pay for 5 units of Bread worth 3.50 as he/she has only 0.20
+Sat Dec 17 13:58:25 2022, John has not enough money to pay for 4 units of Bread worth 2.80 as he/she has only 0.20
+Sat Dec 17 13:58:25 2022, John has not enough money to pay for 3 units of Bread worth 2.10 as he/she has only 0.20
+Sat Dec 17 13:58:25 2022, John has not enough money to pay for 2 units of Bread worth 1.40 as he/she has only 0.20
+Sat Dec 17 13:58:25 2022, John has not enough money to pay for 1 units of Bread worth 0.70 as he/she has only 0.20
+2022-12-17 14:15:35.023233, There is not enough Bin Bags in stock. Actual stock: 4 / Required Stock 10 
+2022-12-17 14:15:35.023549, Shop doesn't have Beer in stock
+2022-12-17 14:15:36.348694, John has not enough money to pay for 5 units of Bread worth 3.50 as he/she has only 0.20
+2022-12-17 14:15:36.348897, John has not enough money to pay for 4 units of Bread worth 2.80 as he/she has only 0.20
+2022-12-17 14:15:36.349026, John has not enough money to pay for 3 units of Bread worth 2.10 as he/she has only 0.20
+2022-12-17 14:15:36.349188, John has not enough money to pay for 2 units of Bread worth 1.40 as he/she has only 0.20
+2022-12-17 14:15:36.349327, John has not enough money to pay for 1 units of Bread worth 0.70 as he/she has only 0.20
+2022-12-17 14:22:47.847860, There is not enough Bin Bags in stock. Actual stock: 4 / Required Stock 10 
+2022-12-17 14:22:47.848162, Shop doesn't have Bread in stock
+2022-12-17 14:22:47.848391, Shop doesn't have Beer in stock
+2022-12-17 14:22:48.810692, John has not enough money to pay for 5 units of Bread worth 3.50 as he/she has only 0.20
+2022-12-17 14:22:48.810919, John has not enough money to pay for 4 units of Bread worth 2.80 as he/she has only 0.20
+2022-12-17 14:22:48.811065, John has not enough money to pay for 3 units of Bread worth 2.10 as he/she has only 0.20
+2022-12-17 14:22:48.811207, John has not enough money to pay for 2 units of Bread worth 1.40 as he/she has only 0.20
+2022-12-17 14:22:48.811373, John has not enough money to pay for 1 units of Bread worth 0.70 as he/she has only 0.20
+2022-12-17 15:06:15.564165, There is not enough Bin Bags in stock. Actual stock 10 / Required stock 4
+2022-12-17 15:06:15.564476, Shop doesn't have Beer in stock
+2022-12-17 15:06:17.768793, John has not enough money to pay for 5 units of Bread worth 3.50 as he/she has only 0.20
+2022-12-17 15:06:17.769051, John has not enough money to pay for 4 units of Bread worth 2.80 as he/she has only 0.20
+2022-12-17 15:06:17.769268, John has not enough money to pay for 3 units of Bread worth 2.10 as he/she has only 0.20
+2022-12-17 15:06:17.769455, John has not enough money to pay for 2 units of Bread worth 1.40 as he/she has only 0.20
+2022-12-17 15:06:17.770526, John has not enough money to pay for 1 units of Bread worth 0.70 as he/she has only 0.20

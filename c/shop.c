@@ -69,7 +69,11 @@ void printCustomer(struct Customer c){
  
         printf(", REQUIRED QUANTITY: %d", c.shoppingList[i].quatity);
         printf(", IN THE BASKET: %d", c.shoppingBasket[i].quatity);
-        printf(", IN THE BAG: %d\n", c.shoppingBag[i].quatity);
+        printf(", IN THE BAG: %d", c.shoppingBag[i].quatity);
+        if(c.shoppingBasket[i].product.price == 0){
+            printf(" ,%s doesn't know how much that cost :(", c.name);
+        }
+        printf("\n");
 
         totalCostPayed += c.shoppingBag[i].product.price*c.shoppingBag[i].quatity;
         totalCostDue += c.shoppingBasket[i].product.price*c.shoppingBasket[i].quatity;
@@ -286,6 +290,13 @@ struct transactionParties fillShoppingBasket(struct transactionParties tp, const
                     0
                 };
 
+                // log exception to Exception file
+                char *msgOut;
+                asprintf(&msgOut, "Shop doesn't have %s in stock", tp.customer.shoppingList[i].product.name);
+                printf("%s\n", msgOut);
+                logException(log_file, msgOut);                
+                
+                // add 0 stock of required product to the basket
                 tp.customer.shoppingBasket[i] = basketItem;                
             }
         }

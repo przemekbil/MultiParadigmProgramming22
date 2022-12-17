@@ -92,12 +92,18 @@ def print_customer(cust):
     print("Shopping list:")
     for product in cust["shopping_list"]:
 
-        print("NAME: {},  PRICE: €{:.2f}, REQUIRED QUANTITY: {:3d}, IN THE BASKET: {:3d}, IN THE BAG: {:3d}".format(
+        if product["price"]==0:
+            msg =  ",{} doesn't know how much that costs :(".format(cust["name"])
+        else:
+            msg = ""
+
+        print("NAME: {},  PRICE: €{:.2f}, REQUIRED QUANTITY: {:3d}, IN THE BASKET: {:3d}, IN THE BAG: {:3d} {}".format(
             product["name"], 
             product["price"], 
             product["qty"], 
             product["basket_qty"],
-            product["bag_qty"]
+            product["bag_qty"],
+            msg
             )
         )
 
@@ -125,8 +131,11 @@ def fill_shopping_basket(customer, shop, ef_path):
     # Filter as per https://stackoverflow.com/questions/29051573/python-filter-list-of-dictionaries-based-on-key-value
     # The filtering is done to loop only over new products (products not in the basket yet)
     for list_item in list(filter(lambda d: d['basket_qty'] + d['bag_qty'] == 0, customer["shopping_list"])):
+        # product item counter from the shop stock (used to make sure all the products were searched)
+        nr = 0
         # loop over the products in the shops stock
         for stock_item in shop["products"]:
+            nr +=1
 
             # If product from shopping list is found in the shops stock, put it in the basket
             if list_item["name"] == stock_item["name"]:
@@ -152,6 +161,15 @@ def fill_shopping_basket(customer, shop, ef_path):
 
                 # Assign the price 
                 list_item["price"] = stock_item["price"]
+
+                # exit the loop over shops stock products
+                break
+
+            # if product was not found after looping over all the items in the shop stock
+            # log the error in the Exceptions file
+            elif nr == len(shop["products"]):
+                msgOut = "Shop doesn't have {} in stock".format(list_item["name"] )          
+                addToExceptionsFiles(exceptions_csv_path, msgOut)
 
     # keep tally of the total cost of all the products in the shopping list
     payment_due = 0

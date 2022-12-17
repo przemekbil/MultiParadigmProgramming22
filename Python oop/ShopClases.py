@@ -160,36 +160,17 @@ class Customer:
         # Filter as per https://stackoverflow.com/questions/29051573/python-filter-list-of-dictionaries-based-on-key-value
         # The filtering is done to loop only over new products (products not yet in the basket or the shopping bag)
         for list_item in list(filter(lambda d: d.basket_qty + d.bag_qty == 0 , self.shopping_list)):
-            # loop over the products in the shops stock
-            for stock_item in shop.stock:
 
-                # If product from shopping list is found in the shops stock, put it in the basket
-                if list_item.getName() == stock_item.getName():
-                    
-                    # make sure shop has enough stock to fulfill the order
-                    if stock_item.getQty() >= list_item.getQty():
-                        qty = list_item.getQty()              
-                    else:
-                    # if it doesn't, put in the basket whatever is left in stock
-                        qty = stock_item.getQty() 
-                        err_msg = "There is not enough {} in stock. Actual stock: {} / Required Stock {} ".format(
-                            list_item.getName(), 
-                            qty, 
-                            list_item.quantity
-                            )
-                        ShopFunctions.addToExceptionsFiles(ef_path, err_msg)
 
-                    # keep a tally of sum of all the products in the basket
-                    self.basket_qty += qty
-                    
-                    # Remove required qty from the shops stock
-                    stock_item.changeQty(-qty)
+            # get product from the shop
+            foundStock = shop.getProductFromShelf(list_item.getName(), list_item.getQty(), ef_path)
 
-                    # put the required amount of selected product into the shopping basket
-                    list_item.changeBasketQty(qty)
+            # put the required amount of selected product into the shopping basket
+            list_item.changeBasketQty(foundStock.getQty())
 
-                    # Assign the price 
-                    list_item.setUnitPrice(stock_item.getUnitPrice())
+            # Assign the price 
+            list_item.setUnitPrice(foundStock.getUnitPrice())
+       
 
 
     def addItemToShoppingList(self, prodName, unitPrice, quantity):
@@ -305,14 +286,36 @@ class Shop:
     # Method to search Shops stock by the product name
     # If product is found, Unit price and stock Qty is returned
     # If no product of that name is found, 0,0 is returned
-    def checkStockByName(self, searched_name):
+    def getProductFromShelf(self, searched_name, asked_qty, ef_path):
 
         for stock_item in self.stock:
             if stock_item.getName()==searched_name:
-                return stock_item
+                
+                # check if Shop has enough stock
+                if stock_item.getQty()>=asked_qty:
+                    stock_item.changeQty(-asked_qty)
+
+                    # return product staock that can be put to customers shopping basket
+                    return ProductStock(stock_item.getProduct(), asked_qty)
+                else:
+                    # get all available quantity and set shops stock quantity to 0
+                    available_qty = stock_item.getQty()
+                    stock_item.setQty(0)
+
+                    err_msg = "There is not enough {} in stock. Actual stock {} / Required stock {}".format(
+                        searched_name,
+                        asked_qty,
+                        available_qty
+                    )
+                    ShopFunctions.addToExceptionsFiles(ef_path, err_msg)
+                    # return product staock that can be put to customers shopping basket
+                    return ProductStock(stock_item.getProduct(), available_qty)
+
         
         # If above loop doesn't find the searched product
         # Return instance of the ProductStock object with cost of 0 and 0 stock
+        err_msg = "Shop doesn't have {} in stock".format(searched_name)
+        ShopFunctions.addToExceptionsFiles(ef_path, err_msg)        
         return ProductStock(Product(searched_name, 0), 0)
 
     # Define function to perform the sales transaction
